@@ -45,10 +45,10 @@ number here has already drifted from reality once before (see `CHANGELOG.md`,
 <!-- VALIDATION_TABLE_START -->
 | Check | Result |
 | --- | --- |
-| Python tests | 369 passed |
+| Python tests | 629 passed |
 | Browser optimization methods | 6 of 6 passed all decision controls |
 | Python/JavaScript parity | Passed (4 candidates, 3 grids, 4 roundings) |
-| Frontend production build | Passed (main bundle 314.98 kB, 93.10 kB gzip) |
+| Frontend production build | Passed (main bundle 314.89 kB, 93.07 kB gzip) |
 | Dependency audit | 0 known vulnerabilities |
 | Live scenario and hybrid browser checks | Passed |
 | High-level PDF | 9 pages present (page count verified automatically; visual review is still manual) |

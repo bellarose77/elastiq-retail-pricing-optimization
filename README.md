@@ -64,9 +64,12 @@ make test-python
 make test-js
 ```
 
-The packaged release passes 358 Python tests, all six browser optimization
+The packaged release passes 629 Python tests, all six browser optimization
 methods pass their decision controls, the Python and JavaScript demand engines
 match on shared fixtures, and the production frontend builds successfully.
+(Current counts are regenerated automatically in `FINAL_RELEASE.md` — run
+`python scripts/generate_release_status.py` rather than hand-editing numbers
+here or there.)
 
 Eight stages, three acts. Colour marks distance from a decision — ⚪ slate prepares the evidence, 🔵 blue estimates it, 🔴 red acts on it. **Only step 08 sets a price.**
 

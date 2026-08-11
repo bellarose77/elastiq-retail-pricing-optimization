@@ -38,7 +38,7 @@ known synthetic ground truth. Those changes were retained.
 
 | Evidence | Result |
 | --- | --- |
-| Python suite | 358 tests passed |
+| Python suite | 629 tests passed (see `FINAL_RELEASE.md` for the current count) |
 | Browser methods | 6 of 6 passed, 10 of 10 controls each |
 | Python/JavaScript parity | 4 candidate, 3 grid, and 4 rounding cases passed |
 | Frontend production build | passed |
