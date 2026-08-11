@@ -1,0 +1,101 @@
+note_id,date,product_id,category,region,source,market_note,sentiment,event_type,expected_demand_effect,impact_score
+N001,2024-05-26,P006,Grocery,West,Supplier Update,Seasonal demand for Grocery is strengthening ahead of the upcoming holiday period.,positive,seasonal_demand,increase,0.65
+N002,2024-11-03,P001,Beverages,Central,Supplier Update,A major community event is expected to increase store traffic and demand for Beverages products.,positive,local_event,increase,0.55
+N003,2024-11-05,P010,Personal Care,East,Market Intelligence,A major community event is expected to increase store traffic and demand for Personal Care products.,positive,local_event,increase,0.55
+N004,2024-06-02,P003,Beverages,Central,Supplier Update,A major community event is expected to increase store traffic and demand for Beverages products.,positive,local_event,increase,0.55
+N005,2024-05-22,P002,Beverages,East,Store Manager,Forecast weather conditions may change customer traffic and short-term demand for Beverages.,neutral,weather_event,mixed,0.1
+N006,2024-04-11,P003,Beverages,East,Supplier Update,Recent customer feedback indicates growing interest in products within the Beverages category.,positive,consumer_trend,increase,0.4
+N007,2024-06-03,P005,Grocery,West,Supplier Update,A competing retailer introduced a significant discount on comparable Grocery products.,negative,competitor_discount,decrease,-0.7
+N008,2024-11-02,P010,Personal Care,Central,Supplier Update,A competing retailer introduced a significant discount on comparable Personal Care products.,negative,competitor_discount,decrease,-0.7
+N009,2024-10-28,P005,Grocery,East,Regional Sales Team,A supplier disruption may reduce availability and increase procurement costs for Grocery.,negative,supplier_disruption,uncertain,-0.45
+N010,2024-12-11,P006,Grocery,East,Regional Sales Team,Recent customer feedback indicates growing interest in products within the Grocery category.,positive,consumer_trend,increase,0.4
+N011,2024-07-31,P001,Beverages,West,Regional Sales Team,A competing retailer introduced a significant discount on comparable Beverages products.,negative,competitor_discount,decrease,-0.7
+N012,2024-02-16,P008,Household,West,Market Intelligence,A competing retailer introduced a significant discount on comparable Household products.,negative,competitor_discount,decrease,-0.7
+N013,2024-09-14,P009,Personal Care,Central,Competitor Review,A major community event is expected to increase store traffic and demand for Personal Care products.,positive,local_event,increase,0.55
+N014,2024-06-14,P001,Beverages,West,Supplier Update,Recent customer feedback indicates growing interest in products within the Beverages category.,positive,consumer_trend,increase,0.4
+N015,2024-07-02,P007,Household,Central,Competitor Review,A competing retailer introduced a significant discount on comparable Household products.,negative,competitor_discount,decrease,-0.7
+N016,2024-04-21,P006,Grocery,Central,Supplier Update,A competing retailer introduced a significant discount on comparable Grocery products.,negative,competitor_discount,decrease,-0.7
+N017,2024-04-29,P003,Beverages,West,Competitor Review,A supplier disruption may reduce availability and increase procurement costs for Beverages.,negative,supplier_disruption,uncertain,-0.45
+N018,2024-01-28,P006,Grocery,East,Supplier Update,Seasonal demand for Grocery is strengthening ahead of the upcoming holiday period.,positive,seasonal_demand,increase,0.65
+N019,2024-04-28,P009,Personal Care,Central,Store Manager,A competing retailer introduced a significant discount on comparable Personal Care products.,negative,competitor_discount,decrease,-0.7
+N020,2024-04-15,P009,Personal Care,Central,Store Manager,A major community event is expected to increase store traffic and demand for Personal Care products.,positive,local_event,increase,0.55
+N021,2024-03-16,P002,Beverages,Central,Competitor Review,A major community event is expected to increase store traffic and demand for Beverages products.,positive,local_event,increase,0.55
+N022,2024-02-25,P007,Household,Central,Store Manager,Forecast weather conditions may change customer traffic and short-term demand for Household.,neutral,weather_event,mixed,0.1
+N023,2024-05-17,P001,Beverages,Central,Regional Sales Team,Forecast weather conditions may change customer traffic and short-term demand for Beverages.,neutral,weather_event,mixed,0.1
+N024,2024-10-20,P006,Grocery,Central,Competitor Review,Recent customer feedback indicates growing interest in products within the Grocery category.,positive,consumer_trend,increase,0.4
+N025,2024-05-31,P002,Beverages,West,Store Manager,Forecast weather conditions may change customer traffic and short-term demand for Beverages.,neutral,weather_event,mixed,0.1
+N026,2024-01-05,P002,Beverages,West,Market Intelligence,A competing retailer introduced a significant discount on comparable Beverages products.,negative,competitor_discount,decrease,-0.7
+N027,2024-10-05,P010,Personal Care,Central,Regional Sales Team,Seasonal demand for Personal Care is strengthening ahead of the upcoming holiday period.,positive,seasonal_demand,increase,0.65
+N028,2024-10-29,P009,Personal Care,East,Supplier Update,Forecast weather conditions may change customer traffic and short-term demand for Personal Care.,neutral,weather_event,mixed,0.1
+N029,2024-12-09,P002,Beverages,Central,Regional Sales Team,A competing retailer introduced a significant discount on comparable Beverages products.,negative,competitor_discount,decrease,-0.7
+N030,2024-11-18,P010,Personal Care,West,Competitor Review,A competing retailer introduced a significant discount on comparable Personal Care products.,negative,competitor_discount,decrease,-0.7
+N031,2024-06-28,P005,Grocery,East,Regional Sales Team,Seasonal demand for Grocery is strengthening ahead of the upcoming holiday period.,positive,seasonal_demand,increase,0.65
+N032,2024-08-16,P007,Household,West,Supplier Update,A supplier disruption may reduce availability and increase procurement costs for Household.,negative,supplier_disruption,uncertain,-0.45
+N033,2024-12-30,P008,Household,Central,Regional Sales Team,A supplier disruption may reduce availability and increase procurement costs for Household.,negative,supplier_disruption,uncertain,-0.45
+N034,2024-08-22,P009,Personal Care,East,Regional Sales Team,A major community event is expected to increase store traffic and demand for Personal Care products.,positive,local_event,increase,0.55
+N035,2024-10-18,P005,Grocery,Central,Supplier Update,Seasonal demand for Grocery is strengthening ahead of the upcoming holiday period.,positive,seasonal_demand,increase,0.65
+N036,2024-09-11,P007,Household,Central,Market Intelligence,Forecast weather conditions may change customer traffic and short-term demand for Household.,neutral,weather_event,mixed,0.1
+N037,2024-11-02,P003,Beverages,West,Market Intelligence,Forecast weather conditions may change customer traffic and short-term demand for Beverages.,neutral,weather_event,mixed,0.1
+N038,2024-05-12,P007,Household,East,Market Intelligence,Seasonal demand for Household is strengthening ahead of the upcoming holiday period.,positive,seasonal_demand,increase,0.65
+N039,2024-04-09,P009,Personal Care,East,Supplier Update,Forecast weather conditions may change customer traffic and short-term demand for Personal Care.,neutral,weather_event,mixed,0.1
+N040,2024-09-23,P003,Beverages,Central,Competitor Review,Seasonal demand for Beverages is strengthening ahead of the upcoming holiday period.,positive,seasonal_demand,increase,0.65
+N041,2024-05-12,P010,Personal Care,East,Competitor Review,A supplier disruption may reduce availability and increase procurement costs for Personal Care.,negative,supplier_disruption,uncertain,-0.45
+N042,2024-04-07,P010,Personal Care,Central,Competitor Review,Recent customer feedback indicates growing interest in products within the Personal Care category.,positive,consumer_trend,increase,0.4
+N043,2024-09-25,P004,Grocery,West,Regional Sales Team,A major community event is expected to increase store traffic and demand for Grocery products.,positive,local_event,increase,0.55
+N044,2024-12-11,P008,Household,East,Supplier Update,Recent customer feedback indicates growing interest in products within the Household category.,positive,consumer_trend,increase,0.4
+N045,2024-09-22,P004,Grocery,West,Competitor Review,A major community event is expected to increase store traffic and demand for Grocery products.,positive,local_event,increase,0.55
+N046,2024-08-22,P005,Grocery,West,Regional Sales Team,A major community event is expected to increase store traffic and demand for Grocery products.,positive,local_event,increase,0.55
+N047,2024-07-24,P003,Beverages,East,Competitor Review,Recent customer feedback indicates growing interest in products within the Beverages category.,positive,consumer_trend,increase,0.4
+N048,2024-06-06,P008,Household,West,Regional Sales Team,Seasonal demand for Household is strengthening ahead of the upcoming holiday period.,positive,seasonal_demand,increase,0.65
+N049,2024-11-26,P006,Grocery,Central,Store Manager,Seasonal demand for Grocery is strengthening ahead of the upcoming holiday period.,positive,seasonal_demand,increase,0.65
+N050,2024-10-02,P007,Household,East,Supplier Update,A major community event is expected to increase store traffic and demand for Household products.,positive,local_event,increase,0.55
+N051,2024-03-09,P005,Grocery,East,Market Intelligence,A supplier disruption may reduce availability and increase procurement costs for Grocery.,negative,supplier_disruption,uncertain,-0.45
+N052,2024-07-15,P006,Grocery,East,Regional Sales Team,A competing retailer introduced a significant discount on comparable Grocery products.,negative,competitor_discount,decrease,-0.7
+N053,2024-01-24,P006,Grocery,Central,Competitor Review,Forecast weather conditions may change customer traffic and short-term demand for Grocery.,neutral,weather_event,mixed,0.1
+N054,2024-02-22,P005,Grocery,Central,Store Manager,Seasonal demand for Grocery is strengthening ahead of the upcoming holiday period.,positive,seasonal_demand,increase,0.65
+N055,2024-04-07,P009,Personal Care,West,Store Manager,A major community event is expected to increase store traffic and demand for Personal Care products.,positive,local_event,increase,0.55
+N056,2024-03-22,P009,Personal Care,East,Store Manager,A supplier disruption may reduce availability and increase procurement costs for Personal Care.,negative,supplier_disruption,uncertain,-0.45
+N057,2024-01-08,P002,Beverages,Central,Store Manager,A supplier disruption may reduce availability and increase procurement costs for Beverages.,negative,supplier_disruption,uncertain,-0.45
+N058,2024-02-16,P001,Beverages,Central,Regional Sales Team,Forecast weather conditions may change customer traffic and short-term demand for Beverages.,neutral,weather_event,mixed,0.1
+N059,2024-11-09,P010,Personal Care,East,Competitor Review,Seasonal demand for Personal Care is strengthening ahead of the upcoming holiday period.,positive,seasonal_demand,increase,0.65
+N060,2024-10-19,P003,Beverages,East,Store Manager,A major community event is expected to increase store traffic and demand for Beverages products.,positive,local_event,increase,0.55
+N061,2024-04-14,P009,Personal Care,East,Store Manager,Seasonal demand for Personal Care is strengthening ahead of the upcoming holiday period.,positive,seasonal_demand,increase,0.65
+N062,2024-02-03,P002,Beverages,East,Competitor Review,Recent customer feedback indicates growing interest in products within the Beverages category.,positive,consumer_trend,increase,0.4
+N063,2024-05-11,P006,Grocery,Central,Regional Sales Team,A supplier disruption may reduce availability and increase procurement costs for Grocery.,negative,supplier_disruption,uncertain,-0.45
+N064,2024-11-06,P007,Household,East,Competitor Review,Recent customer feedback indicates growing interest in products within the Household category.,positive,consumer_trend,increase,0.4
+N065,2024-05-06,P009,Personal Care,East,Store Manager,Recent customer feedback indicates growing interest in products within the Personal Care category.,positive,consumer_trend,increase,0.4
+N066,2024-05-23,P010,Personal Care,East,Market Intelligence,A competing retailer introduced a significant discount on comparable Personal Care products.,negative,competitor_discount,decrease,-0.7
+N067,2024-12-01,P003,Beverages,West,Market Intelligence,Forecast weather conditions may change customer traffic and short-term demand for Beverages.,neutral,weather_event,mixed,0.1
+N068,2024-03-14,P009,Personal Care,West,Store Manager,Recent customer feedback indicates growing interest in products within the Personal Care category.,positive,consumer_trend,increase,0.4
+N069,2024-12-01,P001,Beverages,Central,Market Intelligence,A supplier disruption may reduce availability and increase procurement costs for Beverages.,negative,supplier_disruption,uncertain,-0.45
+N070,2024-12-16,P001,Beverages,West,Market Intelligence,Recent customer feedback indicates growing interest in products within the Beverages category.,positive,consumer_trend,increase,0.4
+N071,2024-03-19,P004,Grocery,West,Supplier Update,A competing retailer introduced a significant discount on comparable Grocery products.,negative,competitor_discount,decrease,-0.7
+N072,2024-07-24,P001,Beverages,East,Competitor Review,Recent customer feedback indicates growing interest in products within the Beverages category.,positive,consumer_trend,increase,0.4
+N073,2024-03-03,P001,Beverages,Central,Regional Sales Team,Recent customer feedback indicates growing interest in products within the Beverages category.,positive,consumer_trend,increase,0.4
+N074,2024-06-02,P008,Household,Central,Store Manager,Forecast weather conditions may change customer traffic and short-term demand for Household.,neutral,weather_event,mixed,0.1
+N075,2024-11-20,P004,Grocery,West,Market Intelligence,A supplier disruption may reduce availability and increase procurement costs for Grocery.,negative,supplier_disruption,uncertain,-0.45
+N076,2024-02-21,P002,Beverages,Central,Market Intelligence,A supplier disruption may reduce availability and increase procurement costs for Beverages.,negative,supplier_disruption,uncertain,-0.45
+N077,2024-12-06,P006,Grocery,Central,Market Intelligence,A major community event is expected to increase store traffic and demand for Grocery products.,positive,local_event,increase,0.55
+N078,2024-08-03,P010,Personal Care,East,Regional Sales Team,A supplier disruption may reduce availability and increase procurement costs for Personal Care.,negative,supplier_disruption,uncertain,-0.45
+N079,2024-02-23,P009,Personal Care,Central,Competitor Review,Forecast weather conditions may change customer traffic and short-term demand for Personal Care.,neutral,weather_event,mixed,0.1
+N080,2024-01-18,P002,Beverages,East,Regional Sales Team,Recent customer feedback indicates growing interest in products within the Beverages category.,positive,consumer_trend,increase,0.4
+N081,2024-05-07,P008,Household,Central,Competitor Review,Seasonal demand for Household is strengthening ahead of the upcoming holiday period.,positive,seasonal_demand,increase,0.65
+N082,2024-01-02,P008,Household,East,Regional Sales Team,A competing retailer introduced a significant discount on comparable Household products.,negative,competitor_discount,decrease,-0.7
+N083,2024-04-12,P004,Grocery,Central,Supplier Update,Recent customer feedback indicates growing interest in products within the Grocery category.,positive,consumer_trend,increase,0.4
+N084,2024-08-05,P007,Household,East,Supplier Update,Seasonal demand for Household is strengthening ahead of the upcoming holiday period.,positive,seasonal_demand,increase,0.65
+N085,2024-02-24,P001,Beverages,West,Store Manager,A supplier disruption may reduce availability and increase procurement costs for Beverages.,negative,supplier_disruption,uncertain,-0.45
+N086,2024-12-25,P007,Household,West,Supplier Update,Recent customer feedback indicates growing interest in products within the Household category.,positive,consumer_trend,increase,0.4
+N087,2024-01-28,P003,Beverages,Central,Competitor Review,A competing retailer introduced a significant discount on comparable Beverages products.,negative,competitor_discount,decrease,-0.7
+N088,2024-03-01,P005,Grocery,East,Supplier Update,A major community event is expected to increase store traffic and demand for Grocery products.,positive,local_event,increase,0.55
+N089,2024-11-15,P008,Household,East,Store Manager,A competing retailer introduced a significant discount on comparable Household products.,negative,competitor_discount,decrease,-0.7
+N090,2024-10-02,P005,Grocery,East,Store Manager,A supplier disruption may reduce availability and increase procurement costs for Grocery.,negative,supplier_disruption,uncertain,-0.45
+N091,2024-03-21,P001,Beverages,East,Market Intelligence,A competing retailer introduced a significant discount on comparable Beverages products.,negative,competitor_discount,decrease,-0.7
+N092,2024-10-10,P005,Grocery,East,Store Manager,A major community event is expected to increase store traffic and demand for Grocery products.,positive,local_event,increase,0.55
+N093,2024-04-30,P004,Grocery,East,Market Intelligence,A major community event is expected to increase store traffic and demand for Grocery products.,positive,local_event,increase,0.55
+N094,2024-07-15,P002,Beverages,West,Market Intelligence,A supplier disruption may reduce availability and increase procurement costs for Beverages.,negative,supplier_disruption,uncertain,-0.45
+N095,2024-05-06,P004,Grocery,West,Regional Sales Team,A major community event is expected to increase store traffic and demand for Grocery products.,positive,local_event,increase,0.55
+N096,2024-01-18,P007,Household,West,Market Intelligence,Forecast weather conditions may change customer traffic and short-term demand for Household.,neutral,weather_event,mixed,0.1
+N097,2024-07-25,P005,Grocery,East,Regional Sales Team,Seasonal demand for Grocery is strengthening ahead of the upcoming holiday period.,positive,seasonal_demand,increase,0.65
+N098,2024-06-27,P009,Personal Care,East,Regional Sales Team,Seasonal demand for Personal Care is strengthening ahead of the upcoming holiday period.,positive,seasonal_demand,increase,0.65
+N099,2024-11-14,P009,Personal Care,West,Competitor Review,A supplier disruption may reduce availability and increase procurement costs for Personal Care.,negative,supplier_disruption,uncertain,-0.45
+N100,2024-01-21,P003,Beverages,West,Market Intelligence,A competing retailer introduced a significant discount on comparable Beverages products.,negative,competitor_discount,decrease,-0.7

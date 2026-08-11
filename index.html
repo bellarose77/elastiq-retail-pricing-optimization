@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Retail Pricing & Promotion Optimization</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#eef0e9;
+    --paper:#ffffff;
+    --ink:#161a1f;
+    --muted:#6b7280;
+    --line:#e2e4dc;
+
+    --slate:#57616e;
+    --slate-tint:#eef0f2;
+    --navy:#16324f;
+    --navy-tint:#eaf0f5;
+    --red:#b3122a;
+    --red-tint:#fbeaec;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Inter',system-ui,sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  .lab{
+    font-family:'JetBrains Mono',monospace;
+    text-transform:uppercase;
+    letter-spacing:.14em;
+    font-size:11px;
+    color:var(--muted);
+    font-weight:500;
+  }
+  .wrap{max-width:1180px;margin:0 auto;padding:48px 24px 80px;}
+
+  /* ================= TOP POSTER HEADER ================= */
+  .poster-head{margin-bottom:36px;}
+  .legend{display:flex;gap:8px;margin-bottom:18px;}
+  .legend span{display:block;width:36px;height:4px;border-radius:2px;}
+  .legend .a{background:var(--slate);}
+  .legend .b{background:var(--navy);}
+  .legend .c{background:var(--red);}
+  h1.big-title{
+    font-size:2rem;
+    font-weight:800;
+    margin:0 0 8px;
+    letter-spacing:-.01em;
+  }
+  p.big-sub{
+    color:var(--muted);
+    font-size:1.05rem;
+    margin:0 0 32px;
+  }
+
+  /* mini flow strip */
+  .miniflow{
+    display:flex;
+    align-items:stretch;
+    gap:0;
+    overflow-x:auto;
+    padding-bottom:6px;
+  }
+  .miniflow .io-pill{
+    flex:0 0 auto;
+    background:#e3e5dd;
+    border-radius:3px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:0 18px;
+    font-family:'JetBrains Mono',monospace;
+    font-size:11px;
+    letter-spacing:.1em;
+    color:var(--muted);
+    text-transform:uppercase;
+  }
+  .miniflow .arrow{
+    flex:0 0 auto;
+    display:flex;
+    align-items:center;
+    padding:0 8px;
+    color:#9aa0a6;
+    font-size:16px;
+  }
+  .miniflow .node{
+    flex:0 0 128px;
+    background:#fff;
+    border:1px solid var(--line);
+    border-top:4px solid var(--slate);
+    border-radius:3px;
+    padding:10px 14px;
+    margin-right:2px;
+  }
+  .miniflow .node.models{border-top-color:var(--navy);}
+  .miniflow .node.decision{border-top-color:var(--red); background:var(--red); }
+  .miniflow .node .n{
+    font-weight:800;
+    font-size:1rem;
+    color:var(--ink);
+  }
+  .miniflow .node.decision .n{color:#fff;}
+  .miniflow .node .t{
+    font-size:.82rem;
+    color:#3c4552;
+    margin-top:2px;
+  }
+  .miniflow .node.decision .t{color:#fbeaec;}
+  .act-brackets{
+    display:flex;
+    gap:0;
+    margin-bottom:6px;
+    font-family:'JetBrains Mono',monospace;
+    font-size:10px;
+    letter-spacing:.12em;
+    color:var(--muted);
+  }
+  .poster-caption{
+    margin-top:14px;
+    color:var(--muted);
+    font-size:.82rem;
+    font-family:'JetBrains Mono',monospace;
+    letter-spacing:.04em;
+    display:flex;
+    gap:18px;
+    flex-wrap:wrap;
+  }
+
+  /* ================= ACT DIVIDERS ================= */
+  .act-divider{
+    margin:52px 0 24px;
+  }
+  .act-divider .lab{margin-bottom:4px;}
+  .act-divider h2{
+    font-size:1.3rem;
+    margin:0 0 6px;
+  }
+  .act-divider p{
+    color:#3d434b;
+    max-width:70ch;
+    line-height:1.55;
+    margin:0;
+    font-size:.95rem;
+  }
+
+  /* ================= SLIDE CARD ================= */
+  .slide{
+    display:grid;
+    grid-template-columns:150px 1fr;
+    background:var(--paper);
+    border-radius:6px;
+    overflow:hidden;
+    box-shadow:0 1px 2px rgba(0,0,0,.04);
+    margin-bottom:6px;
+  }
+  .rail{
+    padding:36px 24px;
+    color:#fff;
+    display:flex;
+    flex-direction:column;
+  }
+  .rail .num{
+    font-size:2.6rem;
+    font-weight:800;
+    line-height:1;
+    margin-bottom:6px;
+  }
+  .rail .tag{
+    font-family:'JetBrains Mono',monospace;
+    font-size:11px;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    opacity:.85;
+  }
+  .rail .rule{
+    margin-top:auto;
+    width:26px;
+    height:1px;
+    background:rgba(255,255,255,.5);
+  }
+  .rail.data{background:var(--slate);}
+  .rail.models{background:var(--navy);}
+  .rail.decision{background:var(--red);}
+
+  .body{padding:36px 40px 30px;}
+  .body .lab.step-of{margin-bottom:8px;}
+  .body h3{
+    font-size:1.9rem;
+    font-weight:800;
+    margin:0 0 14px;
+    letter-spacing:-.01em;
+  }
+  .body .q{
+    font-style:italic;
+    color:var(--muted);
+    font-size:1.08rem;
+    line-height:1.5;
+    max-width:70ch;
+    margin:0 0 22px;
+  }
+  hr.rule-line{
+    border:none;
+    border-top:1px solid var(--line);
+    margin:0 0 22px;
+  }
+
+  .row3{
+    display:grid;
+    grid-template-columns:1fr 1fr 1fr;
+    gap:22px;
+    margin-bottom:22px;
+    position:relative;
+  }
+  .row3 .col{position:relative;}
+  .row3 .col .lab{margin-bottom:6px;}
+  .row3 .col .val{font-size:.95rem;line-height:1.5;color:var(--ink);}
+  .row3 .col.activity{
+    border-radius:3px;
+    padding:14px 16px;
+    margin:-14px 0;
+  }
+  .row3 .col.activity .lab{font-weight:600;}
+  .row3.data .col.activity{background:var(--slate-tint);}
+  .row3.models .col.activity{background:var(--navy-tint);}
+  .row3.decision .col.activity{background:var(--red-tint);}
+  .row3.data .col.activity .lab{color:var(--slate);}
+  .row3.models .col.activity .lab{color:var(--navy);}
+  .row3.decision .col.activity .lab{color:var(--red);}
+
+  .row2{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:36px;
+    margin-bottom:22px;
+    padding-bottom:22px;
+    border-bottom:1px solid var(--line);
+  }
+  .row2 .col{position:relative;}
+  .row2 .col:first-child::after{
+    content:"";
+    position:absolute;
+    top:0; right:-18px; bottom:0;
+    width:1px;
+    background:var(--line);
+  }
+  .row2 .lab{margin-bottom:6px;}
+  .row2 .val{font-size:.92rem;line-height:1.5;color:var(--ink);}
+  .row2 .col.wrong .val{color:#4b5563;}
+  .row2.data .lab.wrong-lab{color:var(--slate);}
+  .row2.models .lab.wrong-lab{color:var(--navy);}
+  .row2.decision .lab.wrong-lab{color:var(--red);}
+
+  .row3b{
+    display:grid;
+    grid-template-columns:1fr 1fr 1.4fr;
+    gap:22px;
+  }
+  .row3b .lab{margin-bottom:6px;}
+  .row3b .val{font-size:.92rem;line-height:1.5;color:#3d434b;}
+
+  .caption-below{
+    padding:12px 4px 0;
+    font-family:'JetBrains Mono',monospace;
+    font-size:11px;
+    letter-spacing:.1em;
+    text-transform:uppercase;
+    color:var(--muted);
+    margin-bottom:44px;
+  }
+
+  footer{
+    margin-top:60px;
+    background:var(--navy);
+    color:#eef1f4;
+    padding:28px 32px;
+    border-radius:6px;
+    display:flex;
+    gap:16px;
+    align-items:flex-start;
+  }
+  footer .mark{font-size:1.4rem;font-weight:800;color:#f3b6c0;}
+  footer p{margin:0;line-height:1.55;font-size:.95rem;color:#d6dce2;}
+  footer strong{color:#fff;}
+
+  @media (max-width:820px){
+    .slide{grid-template-columns:1fr;}
+    .rail{flex-direction:row;align-items:center;gap:14px;padding:18px 24px;}
+    .rail .rule{display:none;}
+    .row3,.row3b{grid-template-columns:1fr;}
+    .row2{grid-template-columns:1fr;}
+    .row2 .col:first-child::after{display:none;}
+    .row2 .col:first-child{padding-bottom:16px;border-bottom:1px solid var(--line);}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- ============ POSTER HEADER ============ -->
+  <div class="poster-head">
+    <div class="legend"><span class="a"></span><span class="b"></span><span class="c"></span></div>
+    <h1 class="big-title">Retail pricing and promotion optimization</h1>
+    <p class="big-sub">Eight stages from raw transactions to a defensible price. Only step 08 decides.</p>
+
+    <div class="miniflow">
+      <div class="io-pill">Inputs</div>
+      <div class="arrow">→</div>
+      <div class="node data"><div class="n">01</div><div class="t">Validation</div></div>
+      <div class="node data"><div class="n">02</div><div class="t">Exploration</div></div>
+      <div class="node models"><div class="n">03</div><div class="t">Elasticity</div></div>
+      <div class="node models"><div class="n">04</div><div class="t">Causal test</div></div>
+      <div class="node models"><div class="n">05</div><div class="t">Uplift</div></div>
+      <div class="node models"><div class="n">06</div><div class="t">Forecasting</div></div>
+      <div class="node decision"><div class="n">07</div><div class="t">Market signals</div></div>
+      <div class="node decision"><div class="n">08</div><div class="t">Optimization</div></div>
+      <div class="arrow">→</div>
+      <div class="io-pill">Outputs</div>
+    </div>
+
+    <div class="poster-caption">
+      <span>EACH STAGE'S PRODUCT IS THE NEXT STAGE'S INPUT</span>
+      <span>·</span>
+      <span>ONLY STEP 08 SETS A PRICE</span>
+    </div>
+  </div>
+
+  <!-- ============ ACT ONE ============ -->
+  <div class="act-divider">
+    <div class="lab">ACT ONE</div>
+    <h2>What is true? <span style="color:var(--muted);font-weight:400;">(01–02)</span></h2>
+    <p>The raw feed arrives with duplicates, gaps, and identities that don't reconcile. Nothing downstream is trustworthy until it survives inspection — and until someone has looked and found where the margin actually lives.</p>
+  </div>
+
+  <!-- STEP 01 -->
+  <div class="slide">
+    <div class="rail data">
+      <div class="num">01</div>
+      <div class="tag">Data</div>
+      <div class="rule"></div>
+    </div>
+    <div class="body">
+      <div class="lab step-of">STEP 1 OF 8</div>
+      <h3>Data validation</h3>
+      <p class="q">Nothing downstream is trustworthy until the raw feed is. This stage is the bouncer at the door.</p>
+      <hr class="rule-line">
+      <div class="row3 data">
+        <div class="col"><div class="lab">Input</div><div class="val">Raw transactions, market notes, schemas, business rules</div></div>
+        <div class="col activity"><div class="lab">Activity</div><div class="val">Checks required fields, missing values, duplicates, ranges, types and cross-field consistency</div></div>
+        <div class="col"><div class="lab">Product</div><div class="val">Validated datasets, quality summary, validation report</div></div>
+      </div>
+      <div class="row2 data">
+        <div class="col"><div class="lab">Why this stage exists</div><div class="val">Every later estimate inherits these rows. Defects here do not raise errors, they propagate quietly.</div></div>
+        <div class="col wrong"><div class="lab wrong-lab">If this is wrong</div><div class="val">Duplicate rows double demand and elasticity absorbs it without complaint.</div></div>
+      </div>
+      <div class="row3b">
+        <div class="col"><div class="lab">Technology</div><div class="val">pandas, NumPy, custom rule checks</div></div>
+        <div class="col"><div class="lab">Alternatives</div><div class="val">Pandera, Great Expectations, dbt tests</div></div>
+        <div class="col"><div class="lab">What the business sees</div><div class="val">A data-quality scorecard: how many rows passed, what was dropped and why</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="caption-below">Product feeds Step 02 · Exploratory analysis</div>
+
+  <!-- STEP 02 -->
+  <div class="slide">
+    <div class="rail data">
+      <div class="num">02</div>
+      <div class="tag">Data</div>
+      <div class="rule"></div>
+    </div>
+    <div class="body">
+      <div class="lab step-of">STEP 2 OF 8</div>
+      <h3>Exploratory analysis</h3>
+      <p class="q">Before modelling anything, you look. Where is the money, where is the discounting, where is the drift?</p>
+      <hr class="rule-line">
+      <div class="row3 data">
+        <div class="col"><div class="lab">Input</div><div class="val">Validated retail data</div></div>
+        <div class="col activity"><div class="lab">Activity</div><div class="val">Computes commercial KPIs by product, category, store, region, promotion and time</div></div>
+        <div class="col"><div class="lab">Product</div><div class="val">KPI tables, portfolio summaries, trend and discount analysis</div></div>
+      </div>
+      <div class="row2 data">
+        <div class="col"><div class="lab">Why this stage exists</div><div class="val">Direction before modelling. Knowing where margin lives decides what is worth optimizing at all.</div></div>
+        <div class="col wrong"><div class="lab wrong-lab">If this is wrong</div><div class="val">You model the whole catalogue evenly and miss that a handful of items drive the result.</div></div>
+      </div>
+      <div class="row3b">
+        <div class="col"><div class="lab">Technology</div><div class="val">pandas, Plotly</div></div>
+        <div class="col"><div class="lab">Alternatives</div><div class="val">SQL data marts, Power BI, Tableau</div></div>
+        <div class="col"><div class="lab">What the business sees</div><div class="val">Portfolio dashboards: top and bottom performers, margin leaks, discount depth by category</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="caption-below">Product feeds Step 03 · Price elasticity</div>
+
+  <!-- ============ ACT TWO ============ -->
+  <div class="act-divider">
+    <div class="lab">ACT TWO</div>
+    <h2>What will happen? <span style="color:var(--muted);font-weight:400;">(03–06)</span></h2>
+    <p>How much demand moves when price moves. Whether that's causal or just an artifact of cutting prices on weak weeks. What promotions genuinely add. And what next period looks like if nothing changes at all.</p>
+  </div>
+
+  <!-- STEP 03 -->
+  <div class="slide">
+    <div class="rail models">
+      <div class="num">03</div>
+      <div class="tag">Models</div>
+      <div class="rule"></div>
+    </div>
+    <div class="body">
+      <div class="lab step-of">STEP 3 OF 8</div>
+      <h3>Price elasticity</h3>
+      <p class="q">The core question: if I move price by one percent, how much demand do I lose?</p>
+      <hr class="rule-line">
+      <div class="row3 models">
+        <div class="col"><div class="lab">Input</div><div class="val">Historical price and demand history</div></div>
+        <div class="col activity"><div class="lab">Activity</div><div class="val">Estimates the demand response to a price change, per item</div></div>
+        <div class="col"><div class="lab">Product</div><div class="val">Elasticity estimates, model statistics, demand-sensitivity classes</div></div>
+      </div>
+      <div class="row2 models">
+        <div class="col"><div class="lab">Why this stage exists</div><div class="val">It is the first number a pricing team asks for and the coefficient step 08 leans on hardest.</div></div>
+        <div class="col wrong"><div class="lab wrong-lab">If this is wrong</div><div class="val">Clipping discount outliers attenuates elasticity toward zero and invites false confidence.</div></div>
+      </div>
+      <div class="row3b">
+        <div class="col"><div class="lab">Technology</div><div class="val">statsmodels, log-log regression</div></div>
+        <div class="col"><div class="lab">Alternatives</div><div class="val">Bayesian regression, hierarchical models, GAMs</div></div>
+        <div class="col"><div class="lab">What the business sees</div><div class="val">Each item tagged elastic, inelastic or roughly unit elastic, with a confidence on that tag</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="caption-below">Product feeds Step 04 · Causal price analysis</div>
+
+  <!-- STEP 04 -->
+  <div class="slide">
+    <div class="rail models">
+      <div class="num">04</div>
+      <div class="tag">Models</div>
+      <div class="rule"></div>
+    </div>
+    <div class="body">
+      <div class="lab step-of">STEP 4 OF 8</div>
+      <h3>Causal price analysis</h3>
+      <p class="q">Correlation lies. Prices get cut because demand was already weak, so a naive elasticity is biased.</p>
+      <hr class="rule-line">
+      <div class="row3 models">
+        <div class="col"><div class="lab">Input</div><div class="val">Demand, price, controls, instruments such as cost shocks</div></div>
+        <div class="col activity"><div class="lab">Activity</div><div class="val">Tests whether the observed demand change was actually caused by price</div></div>
+        <div class="col"><div class="lab">Product</div><div class="val">OLS versus IV comparison, causal estimates, first-stage diagnostics</div></div>
+      </div>
+      <div class="row2 models">
+        <div class="col"><div class="lab">Why this stage exists</div><div class="val">Price reacts to demand as much as demand reacts to price. An instrument breaks that loop.</div></div>
+        <div class="col wrong"><div class="lab wrong-lab">If this is wrong</div><div class="val">A weak instrument passes quietly and every downstream recommendation inherits the bias.</div></div>
+      </div>
+      <div class="row3b">
+        <div class="col"><div class="lab">Technology</div><div class="val">linearmodels (2SLS), statsmodels</div></div>
+        <div class="col"><div class="lab">Alternatives</div><div class="val">Experiments, difference-in-differences, synthetic control</div></div>
+        <div class="col"><div class="lab">What the business sees</div><div class="val">A credibility check: how far the naive number sits from the causal one</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="caption-below">Product feeds Step 05 · Promotion uplift</div>
+
+  <!-- STEP 05 -->
+  <div class="slide">
+    <div class="rail models">
+      <div class="num">05</div>
+      <div class="tag">Models</div>
+      <div class="rule"></div>
+    </div>
+    <div class="body">
+      <div class="lab step-of">STEP 5 OF 8</div>
+      <h3>Promotion uplift</h3>
+      <p class="q">Some promotions create demand. Most discount customers who would have bought anyway.</p>
+      <hr class="rule-line">
+      <div class="row3 models">
+        <div class="col"><div class="lab">Input</div><div class="val">Promotion flags, demand, price, product, store, historical features</div></div>
+        <div class="col activity"><div class="lab">Activity</div><div class="val">Estimates the incremental demand a promotion actually generates</div></div>
+        <div class="col"><div class="lab">Product</div><div class="val">Uplift predictions, ranked opportunities, segment summaries, saved model</div></div>
+      </div>
+      <div class="row2 models">
+        <div class="col"><div class="lab">Why this stage exists</div><div class="val">Promotion spend is only defensible where uplift is incremental rather than coincident.</div></div>
+        <div class="col wrong"><div class="lab wrong-lab">If this is wrong</div><div class="val">A promo window misaligned by one day leaks promoted days into control and inflates uplift.</div></div>
+      </div>
+      <div class="row3b">
+        <div class="col"><div class="lab">Technology</div><div class="val">scikit-learn, XGBoost</div></div>
+        <div class="col"><div class="lab">Alternatives</div><div class="val">Causal forests, X-learner, doubly robust models</div></div>
+        <div class="col"><div class="lab">What the business sees</div><div class="val">A ranked list: which items are worth promoting, which promotions are burning margin</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="caption-below">Product feeds Step 06 · Demand forecasting</div>
+
+  <!-- STEP 06 -->
+  <div class="slide">
+    <div class="rail models">
+      <div class="num">06</div>
+      <div class="tag">Models</div>
+      <div class="rule"></div>
+    </div>
+    <div class="body">
+      <div class="lab step-of">STEP 6 OF 8</div>
+      <h3>Demand forecasting</h3>
+      <p class="q">Without a forecast of what happens if you do nothing, there is nothing to price a change against.</p>
+      <hr class="rule-line">
+      <div class="row3 models">
+        <div class="col"><div class="lab">Input</div><div class="val">Demand history, prices, promotions, calendar, lags, rolling features</div></div>
+        <div class="col activity"><div class="lab">Activity</div><div class="val">Predicts future demand using chronological train, validation and test splits</div></div>
+        <div class="col"><div class="lab">Product</div><div class="val">Item-level forecasts, evaluation metrics, feature importance, saved model</div></div>
+      </div>
+      <div class="row2 models">
+        <div class="col"><div class="lab">Why this stage exists</div><div class="val">Optimization scores every candidate price against a do-nothing baseline. This is that baseline.</div></div>
+        <div class="col wrong"><div class="lab wrong-lab">If this is wrong</div><div class="val">Gaps in the calendar let lag and rolling features silently span missing time.</div></div>
+      </div>
+      <div class="row3b">
+        <div class="col"><div class="lab">Technology</div><div class="val">XGBoost, scikit-learn</div></div>
+        <div class="col"><div class="lab">Alternatives</div><div class="val">LightGBM, CatBoost, ARIMA, Prophet, deep learning</div></div>
+        <div class="col"><div class="lab">What the business sees</div><div class="val">Expected units per item next period, with accuracy stated plainly (MAE, MAPE)</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="caption-below">Product feeds Step 07 · Market intelligence</div>
+
+  <!-- ============ ACT THREE ============ -->
+  <div class="act-divider">
+    <div class="lab">ACT THREE</div>
+    <h2>What should we do? <span style="color:var(--muted);font-weight:400;">(07–08)</span></h2>
+    <p>The market enters as structured signal rather than prose. Every candidate price is scored against demand, margin and the rules the business won't break. One price is chosen — and it arrives carrying the constraint that bound it.</p>
+  </div>
+
+  <!-- STEP 07 -->
+  <div class="slide">
+    <div class="rail decision">
+      <div class="num">07</div>
+      <div class="tag">Decision</div>
+      <div class="rule"></div>
+    </div>
+    <div class="body">
+      <div class="lab step-of">STEP 7 OF 8</div>
+      <h3>Market intelligence</h3>
+      <p class="q">Competitor notes and sentiment live as free text. The optimizer can only read columns.</p>
+      <hr class="rule-line">
+      <div class="row3 decision">
+        <div class="col"><div class="lab">Input</div><div class="val">Market notes, competitor observations, customer signals, trends</div></div>
+        <div class="col activity"><div class="lab">Activity</div><div class="val">Converts unstructured text into structured pricing features</div></div>
+        <div class="col"><div class="lab">Product</div><div class="val">Sentiment, competitor, price-sensitivity, promotion-interest and trend features</div></div>
+      </div>
+      <div class="row2 decision">
+        <div class="col"><div class="lab">Why this stage exists</div><div class="val">A price is set against a market, not just a demand curve. This is where the market enters.</div></div>
+        <div class="col wrong"><div class="lab wrong-lab">If this is wrong</div><div class="val">Recommendations arrive without context and get overridden on instinct by the category manager.</div></div>
+      </div>
+      <div class="row3b">
+        <div class="col"><div class="lab">Technology</div><div class="val">Retrieval over market notes, feature extraction</div></div>
+        <div class="col"><div class="lab">Alternatives</div><div class="val">Embeddings, vector databases, LLM extraction, topic models</div></div>
+        <div class="col"><div class="lab">What the business sees</div><div class="val">Context beside every recommendation: competitor undercutting, sentiment negative on quality</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="caption-below">Product feeds Step 08 · Price optimization</div>
+
+  <!-- STEP 08 -->
+  <div class="slide">
+    <div class="rail decision">
+      <div class="num">08</div>
+      <div class="tag">Decision</div>
+      <div class="rule"></div>
+    </div>
+    <div class="body">
+      <div class="lab step-of">STEP 8 OF 8</div>
+      <h3>Price optimization</h3>
+      <p class="q">Everything above converges here. Feasible prices are scored against demand, margin and the rules the business won't break.</p>
+      <hr class="rule-line">
+      <div class="row3 decision">
+        <div class="col"><div class="lab">Input</div><div class="val">Price, cost, elasticity, forecasts, uplift, inventory, market features, constraints</div></div>
+        <div class="col activity"><div class="lab">Activity</div><div class="val">Scores feasible price scenarios and selects the most suitable one</div></div>
+        <div class="col"><div class="lab">Product</div><div class="val">Recommended prices with expected demand, revenue, profit, action type, constraint status</div></div>
+      </div>
+      <div class="row2 decision">
+        <div class="col"><div class="lab">Why this stage exists</div><div class="val">This is the only stage that decides. Everything before it is evidence.</div></div>
+        <div class="col wrong"><div class="lab wrong-lab">If this is wrong</div><div class="val">A stale cost or a missing constraint yields a recommendation finance or legal will reject.</div></div>
+      </div>
+      <div class="row3b">
+        <div class="col"><div class="lab">Technology</div><div class="val">SciPy, NumPy grid and constrained search</div></div>
+        <div class="col"><div class="lab">Alternatives</div><div class="val">Nonlinear optimization, Bayesian optimization, reinforcement learning</div></div>
+        <div class="col"><div class="lab">What the business sees</div><div class="val">The decision: raise, hold or cut. The new price, the expected profit delta, the binding guardrail</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="caption-below">Final stage · Output is the pricing recommendation</div>
+
+  <footer>
+    <span class="mark">!</span>
+    <p><strong>This is not an automated pricing system.</strong> Nothing here writes a price to a till. Every recommendation is a proposal, and requires financial, legal, operational and governance review before it reaches a shelf.</p>
+  </footer>
+
+</div>
+</body>
+</html>

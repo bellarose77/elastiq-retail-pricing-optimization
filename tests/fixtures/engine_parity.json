@@ -1,0 +1,173 @@
+{
+  "generated_by": "scripts/generate_parity_fixture.py",
+  "python_defaults": {
+    "objective": "profit",
+    "minPriceChangeRate": -0.2,
+    "maxPriceChangeRate": 0.2,
+    "priceChangeStep": 0.01,
+    "actionThreshold": 0.005,
+    "inventoryMode": "cap"
+  },
+  "candidates": [
+    {
+      "input": {
+        "label": "elastic, no promo, ample stock",
+        "current_price": 10.0,
+        "baseline_quantity": 100.0,
+        "elasticity": -1.8,
+        "unit_cost": 4.0,
+        "candidate_price": 11.0,
+        "promotion_active": false,
+        "promotion_uplift_rate": 0.0,
+        "promotion_cost_rate": 0.02,
+        "available_inventory": null
+      },
+      "expected": {
+        "demand": 84.2351137596245,
+        "revenue": 926.5862513558694,
+        "profit": 589.6457963173715,
+        "marginRate": 0.6363636363636364,
+        "inventoryBinding": false
+      }
+    },
+    {
+      "input": {
+        "label": "inelastic, promo on, promo cost applies",
+        "current_price": 8.5,
+        "baseline_quantity": 60.0,
+        "elasticity": -0.6,
+        "unit_cost": 3.2,
+        "candidate_price": 9.35,
+        "promotion_active": true,
+        "promotion_uplift_rate": 0.15,
+        "promotion_cost_rate": 0.02,
+        "available_inventory": null
+      },
+      "expected": {
+        "demand": 65.16486196321077,
+        "revenue": 609.2914593560207,
+        "profit": 388.57807188662576,
+        "marginRate": 0.6577540106951871,
+        "inventoryBinding": false
+      }
+    },
+    {
+      "input": {
+        "label": "stock binds: demand truncated at inventory",
+        "current_price": 9.08,
+        "baseline_quantity": 34.0,
+        "elasticity": -0.09,
+        "unit_cost": 4.37,
+        "candidate_price": 8.5,
+        "promotion_active": false,
+        "promotion_uplift_rate": 0.0,
+        "promotion_cost_rate": 0.0,
+        "available_inventory": 34.0
+      },
+      "expected": {
+        "demand": 34.0,
+        "revenue": 289.0,
+        "profit": 140.42,
+        "marginRate": 0.48588235294117643,
+        "inventoryBinding": true
+      }
+    },
+    {
+      "input": {
+        "label": "price cut, elastic, stock ample",
+        "current_price": 12.0,
+        "baseline_quantity": 200.0,
+        "elasticity": -2.4,
+        "unit_cost": 5.0,
+        "candidate_price": 10.8,
+        "promotion_active": false,
+        "promotion_uplift_rate": 0.0,
+        "promotion_cost_rate": 0.0,
+        "available_inventory": 500.0
+      },
+      "expected": {
+        "demand": 257.54194605200803,
+        "revenue": 2781.4530173616868,
+        "profit": 1493.7432871016467,
+        "marginRate": 0.5370370370370371,
+        "inventoryBinding": false
+      }
+    }
+  ],
+  "grids": [
+    {
+      "input": {
+        "minimum": -0.2,
+        "maximum": 0.2,
+        "step": 0.05
+      },
+      "expected": [
+        -0.2,
+        -0.15,
+        -0.1,
+        -0.05,
+        0.0,
+        0.05,
+        0.1,
+        0.15,
+        0.2
+      ]
+    },
+    {
+      "input": {
+        "minimum": 0.05,
+        "maximum": 0.2,
+        "step": 0.05
+      },
+      "expected": [
+        0.05,
+        0.1,
+        0.15,
+        0.2
+      ]
+    },
+    {
+      "input": {
+        "minimum": -0.2,
+        "maximum": -0.05,
+        "step": 0.05
+      },
+      "expected": [
+        -0.2,
+        -0.15,
+        -0.1,
+        -0.05
+      ]
+    }
+  ],
+  "roundings": [
+    {
+      "input": {
+        "price": 12.34,
+        "ending": 0.99
+      },
+      "expected": 11.99
+    },
+    {
+      "input": {
+        "price": 12.9,
+        "ending": 0.99
+      },
+      "expected": 12.99
+    },
+    {
+      "input": {
+        "price": 0.5,
+        "ending": 0.99
+      },
+      "expected": 0.99
+    },
+    {
+      "input": {
+        "price": 7.05,
+        "ending": 0.95
+      },
+      "expected": 6.95
+    }
+  ]
+}

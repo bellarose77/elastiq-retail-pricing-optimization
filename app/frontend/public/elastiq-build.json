@@ -1,0 +1,10 @@
+{
+  "application": "ELASTIQ Deep Analysis Runner",
+  "build": "1.2.0",
+  "defaultPage": "Test case runner",
+  "testCases": {
+    "small": 50,
+    "medium": 250,
+    "large": 1000
+  }
+}

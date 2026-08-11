@@ -1,0 +1,99 @@
+import { useState, useMemo, useEffect } from "react";
+import { optimizeItem } from "../../lib/engine.js";
+import { fmtMoney, fmtNum, fmtPrice, fmtPct, fmtPctPlain } from "../../lib/format.js";
+import { Toggle, DeltaPill, ActionTag } from "../ui.jsx";
+import { ResponseCurve } from "../charts.jsx";
+
+export default function SkuDetailView({ items, cfg, tech, selectedId, setSelectedId }) {
+  const [sortKey, setSortKey] = useState("profitChange");
+  const [dir, setDir] = useState(-1);
+  const [promoView, setPromoView] = useState(false);
+  const [whatIf, setWhatIf] = useState(null);
+  const rows = useMemo(() => items.map((it) => optimizeItem(it, cfg, tech)), [items, cfg, tech]);
+  const sorted = useMemo(() => [...rows].sort((a, b) => (a[sortKey] > b[sortKey] ? dir : -dir)), [rows, sortKey, dir]);
+  const selected = items.find((i) => i.itemId === selectedId) || items[0];
+  const selRes = useMemo(() => (selected ? optimizeItem(selected, cfg, tech) : null), [selected, cfg, tech]);
+  useEffect(() => { setWhatIf(null); }, [selectedId]);
+
+  const th = (key, label, right) => (
+    <th
+      className={right ? "r sortable" : "sortable"}
+      onClick={() => { if (sortKey === key) setDir(-dir); else { setSortKey(key); setDir(-1); } }}
+    >
+      {label}
+      {sortKey === key ? <span className="sort-arrow">{dir < 0 ? " ↓" : " ↑"}</span> : ""}
+    </th>
+  );
+
+  return (
+    <div className="stack">
+      {selected && selRes ? (
+        <div className="panel">
+          <div className="panel-head">
+            <div>
+              <h3>{selected.itemId} <span className="cat-chip">{selected.category}</span></h3>
+              <p className="panel-sub">Elasticity {selected.elasticity.toFixed(2)} · {selRes.elasticitySource} · confidence {fmtPctPlain(selected.confidence)}</p>
+            </div>
+            <Toggle label="Model promotion" checked={promoView} onChange={setPromoView} />
+          </div>
+          <div className="detail-grid">
+            <ResponseCurve item={selected} cfg={cfg} tech={tech} promoOn={promoView} whatIf={whatIf} setWhatIf={setWhatIf} />
+            <div className="scenario-cards">
+              {[
+                { label: "Current", price: selected.currentPrice, s: selRes._scenarios.current, cls: "sc-current" },
+                { label: "Revenue-max", price: selRes.revenueMaxPrice, s: selRes._scenarios.revenueMax, cls: "sc-rev" },
+                { label: "Profit-max", price: selRes.profitMaxPrice, s: selRes._scenarios.profitMax, cls: "sc-pro" },
+                { label: "Recommended", price: selRes.recommendedPrice, s: selRes._scenarios.recommended, cls: "sc-rec" },
+              ].map((c) => (
+                <div className={"scard " + c.cls} key={c.label}>
+                  <div className="scard-top"><span className="scard-label">{c.label}</span><span className="scard-price mono">{fmtPrice(c.price)}</span></div>
+                  <div className="scard-rows">
+                    <div><span>Demand</span><b className="mono">{fmtNum(c.s.demand)}</b></div>
+                    <div><span>Revenue</span><b className="mono">{fmtMoney(c.s.revenue)}</b></div>
+                    <div><span>Profit</span><b className="mono">{fmtMoney(c.s.profit)}</b></div>
+                    <div><span>Margin</span><b className="mono">{fmtPctPlain(c.s.marginRate)}</b></div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className="guardrail-strip">
+            <span className="gr">Margin floor <b className="mono">{fmtPrice(selRes._guardrails.marginFloor)}</b></span>
+            <span className="gr">Competitor band <b className="mono">{fmtPrice(selRes._guardrails.compLo)}–{fmtPrice(selRes._guardrails.compHi)}</b></span>
+            <span className="gr">Step band <b className="mono">{fmtPrice(selRes._guardrails.stepLo)}–{fmtPrice(selRes._guardrails.stepHi)}</b></span>
+            <span className="gr">Recommend promo <b>{selRes.recommendedPromotionFlag ? "Yes" : "No"}</b></span>
+            {selRes.inventoryBinding ? <span className="gr warn">Inventory-bound</span> : null}
+            {selRes.competitorBinding ? <span className="gr warn">Competitor-capped</span> : null}
+          </div>
+        </div>
+      ) : null}
+      <div className="panel">
+        <div className="panel-head"><div><h3>Decision units</h3><p className="panel-sub">Select a row to inspect its response curve.</p></div></div>
+        <div className="tbl-scroll">
+          <table className="tbl">
+            <thead>
+              <tr>
+                {th("itemId", "Item")}<th>Cat</th>{th("elasticity", "Elas", true)}{th("currentPrice", "Current", true)}{th("recommendedPrice", "Rec.", true)}{th("priceChangeRate", "Δ Price", true)}<th className="r">Action</th>{th("expectedProfit", "Exp. profit", true)}{th("profitChange", "Δ Profit", true)}
+              </tr>
+            </thead>
+            <tbody>
+              {sorted.map((r) => (
+                <tr key={r.itemId} className={r.itemId === selected.itemId ? "row-active" : ""} onClick={() => setSelectedId(r.itemId)}>
+                  <td className="mono">{r.itemId}</td>
+                  <td><span className="cat-chip sm">{r.category}</span></td>
+                  <td className="r mono">{r.elasticity.toFixed(2)}</td>
+                  <td className="r mono">{fmtPrice(r.currentPrice)}</td>
+                  <td className="r mono strong">{fmtPrice(r.recommendedPrice)}</td>
+                  <td className="r mono">{fmtPct(r.priceChangeRate)}</td>
+                  <td className="r"><ActionTag action={r.recommendationAction} /></td>
+                  <td className="r mono">{fmtMoney(r.expectedProfit)}</td>
+                  <td className="r"><DeltaPill value={r.profitChangeRate} /></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  );
+}

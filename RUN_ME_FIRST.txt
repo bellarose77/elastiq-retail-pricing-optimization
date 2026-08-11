@@ -1,0 +1,47 @@
+ELASTIQ - QUICK START
+=====================
+
+WINDOWS
+1. Install Node.js 18 or newer: https://nodejs.org
+2. Double-click start.bat
+3. The application opens at http://127.0.0.1:5173
+
+LINUX OR MACOS
+1. Install Node.js 18 or newer.
+2. Open a terminal in this folder.
+3. Run: chmod +x start.sh
+4. Run: ./start.sh
+
+The first launch installs the web dependencies automatically. Later launches
+start immediately. Keep the command window or terminal open while using the
+application. Press Ctrl+C to stop it.
+
+RUN A LIVE EXAMPLE
+1. The Test Case Runner opens automatically.
+2. Choose Small (50), Medium (250), Large (1,000), or a custom 5-2,000 units.
+3. Choose a balanced, inventory, promotion, or volatile data pattern.
+4. Choose Standard, Deep analysis (default), or Research workload.
+5. Click Run all six approaches, or Run all + hybrid.
+6. Follow Start/Profile, Optimize/Refine, Stress, Simulate, Validate, and
+   Finish. Exact operation counters, charts, logs, risk, and analysis update live.
+7. Download the complete JSON record or the two-page Deep Analysis Run PDF.
+8. Completed Small, Medium, and Large runs remain comparable in Run history.
+
+INPUT ANALYSIS
+Open Data to review numeric completeness, invalid and duplicate rows, price and
+demand ranges, margin, competitor position, inventory pressure, causal evidence,
+promotion readiness, and category-level structure before optimization.
+
+OPTIONAL DATA REFRESH
+The packaged application already contains demonstration data. To rerun all
+eight analytical stages before opening the application, install Python 3.10 or
+newer and use:
+
+  Windows: start.bat --refresh-data
+  Linux:   ./start.sh --refresh-data
+
+DOCUMENTATION
+- output/pdf/ELASTIQ_Team_Overview.pdf
+- output/pdf/ELASTIQ_Technical_System_Guide.pdf
+- docs/APP_GUIDE.md
+- docs/TECHNICAL_REFERENCE.md

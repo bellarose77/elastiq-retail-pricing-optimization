@@ -1,0 +1,41 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+
+# React and Vite
+app/frontend/node_modules/
+app/frontend/dist/
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Operating-system files
+.DS_Store
+Thumbs.db
+__MACOSX/
+
+# Local notebooks
+notebooks/
+# Streamlit pages
+app/pages/
+
+# Local Streamlit application
+app/streamlit_app.py
+app/pages/
+
+# Derived artefacts -- regenerate with `make pipeline`, do not commit.
+# 42 MB of model binaries (including the same XGBoost model as both .pkl and
+# .joblib) and every derived CSV used to be tracked. Committed artefacts then
+# drifted from the code that produced them: the RAG metadata claimed a
+# sentence-transformers backend the repo cannot install, and carried Windows
+# paths from a different machine than the committed CSVs.
+models/*.pkl
+models/*.joblib
+models/*.npy
+data/interim/
+data/processed/

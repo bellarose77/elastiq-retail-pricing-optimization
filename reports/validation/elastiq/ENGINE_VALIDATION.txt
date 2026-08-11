@@ -1,0 +1,28 @@
+ELASTIQ 2.0 engine validation
+Date: 31 July 2026
+Command: npm test
+
+Regenerated after the July 2026 review. The previous version of this file
+reported 71.43% profit uplift for grid search; the code at that commit
+actually produced 1.45%, and -1.16% on revenue. The record had drifted from
+the engine by a factor of ~49 and no test could detect it. `npm test` now
+asserts that reported uplift stays inside a plausible band, that the six
+techniques produce genuinely distinct prices, and that the engine matches
+src/optimization/pricing.py on a shared fixture.
+
+grid:              profit uplift +2.88%, revenue uplift +1.47%, checks 10/10
+closedform:        profit uplift +1.24%, revenue uplift +0.81%, checks 10/10
+robust:            profit uplift +1.88%, revenue uplift -0.75%, checks 10/10
+bayesian:          profit uplift +2.78%, revenue uplift +0.88%, checks 10/10
+multiobjective:    profit uplift +2.08%, revenue uplift +5.02%, checks 10/10
+lagrangian:        profit uplift +0.56%, revenue uplift -6.70%, checks 10/10
+
+Techniques producing distinct price vectors: 6 of 6.
+Cross-language parity with the Python engine: 4 candidates, 3 grids, 4 roundings -- all match.
+
+Uplift is modest because elasticities are now causally identified (2SLS)
+rather than correlational. The old figures came from a constant -1.5
+fallback elasticity applied to 9 of 10 demo products.
+
+Result: all optimization methods passed engine, guardrail, differentiation,
+and cross-language parity validation.

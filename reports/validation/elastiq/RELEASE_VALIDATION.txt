@@ -1,0 +1,12 @@
+ELASTIQ 2.0 release validation
+Date: July 10, 2026
+
+- npm test: passed
+- npm run build: passed
+- Vite modules transformed: 415
+- User Guide PDF: 6 pages, openable, searchable, not encrypted
+- Quick Start PDF: 2 pages, openable, searchable, not encrypted
+- Technical Reference PDF: 5 pages, openable, searchable, not encrypted
+- Sample Decision Report PDF: 2 pages, openable, searchable, not encrypted
+
+Build note: the report-generation dependency creates a JavaScript chunk above Vite's advisory 500 kB threshold. This is a performance optimization opportunity, not a build or functional failure. Dynamic loading of reporting libraries is the recommended future optimization.
