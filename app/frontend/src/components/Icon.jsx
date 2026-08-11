@@ -15,6 +15,7 @@ export default function Icon({ name, size = 18 }) {
     spark: <><path d="m12 2 1.8 5.2L19 9l-5.2 1.8L12 16l-1.8-5.2L5 9l5.2-1.8z"/><path d="m19 15 .8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z"/></>,
     live: <><path d="M4 18V6"/><path d="M4 18h16"/><path d="m6 15 4-5 3 3 5-7"/><circle cx="18" cy="6" r="1.5"/></>,
     play: <><path d="M8 5v14l11-7z"/></>,
+    refresh: <><path d="M3 12a9 9 0 0 1 15.3-6.4L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-15.3 6.4L3 16"/><path d="M3 21v-5h5"/></>,
   };
   return <svg aria-hidden="true" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">{paths[name] || paths.overview}</svg>;
 }

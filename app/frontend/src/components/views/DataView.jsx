@@ -3,14 +3,60 @@ import { parseCSV, downloadCSV, csvTemplate } from "../../lib/report.js";
 import { analyzeInput } from "../../lib/inputAnalysis.js";
 import { fmtNum, fmtPctPlain, fmtPrice } from "../../lib/format.js";
 
+// Mirrors parseCSV's validation in lib/report.js so an inline edit can't put
+// data into a worse state than a CSV import would ever be allowed to:
+// unconstrained fields only need to be finite, the rest match the same
+// domain rule parseCSV enforces.
+const NUMERIC_FIELD_RULES = {
+  currentPrice: { test: (n) => n > 0, message: "must be a positive number" },
+  unitCost: { test: (n) => n >= 0, message: "must be zero or positive" },
+  baselineQuantity: { test: (n) => n >= 0, message: "must be zero or positive" },
+  elasticity: { test: (n) => n < 0, message: "must be negative (elastic demand)" },
+};
+const DEFAULT_NUMERIC_RULE = { test: () => true, message: "must be a number" };
+
 export default function DataView({ items, setItems }) {
   const fileRef = useRef(null);
   const [importMessage, setImportMessage] = useState("");
+  const [drafts, setDrafts] = useState({});
+  const [invalidCells, setInvalidCells] = useState(new Set());
   const analysis = useMemo(() => analyzeInput(items), [items]);
 
+  const cellKey = (idx, key) => idx + ":" + key;
+
   const update = (idx, key, val) => {
-    const next = items.map((it, i) => (i === idx ? { ...it, [key]: key === "category" || key === "itemId" ? val : parseFloat(val) } : it));
-    setItems(next);
+    if (key === "category" || key === "itemId") {
+      setItems(items.map((it, i) => (i === idx ? { ...it, [key]: val } : it)));
+      return;
+    }
+
+    const ck = cellKey(idx, key);
+    const num = parseFloat(val);
+    const rule = NUMERIC_FIELD_RULES[key] || DEFAULT_NUMERIC_RULE;
+    const isValid = val.trim() !== "" && Number.isFinite(num) && rule.test(num);
+
+    if (!isValid) {
+      // Keep exactly what the user typed visible, including a mid-edit state
+      // like "-" or "", but never commit it -- the last valid value stays in
+      // `items` so NaN can never reach the optimizer or downstream views.
+      setDrafts((d) => ({ ...d, [ck]: val }));
+      setInvalidCells((s) => new Set(s).add(ck));
+      return;
+    }
+
+    setDrafts((d) => {
+      if (!(ck in d)) return d;
+      const next = { ...d };
+      delete next[ck];
+      return next;
+    });
+    setInvalidCells((s) => {
+      if (!s.has(ck)) return s;
+      const next = new Set(s);
+      next.delete(ck);
+      return next;
+    });
+    setItems(items.map((it, i) => (i === idx ? { ...it, [key]: num } : it)));
   };
 
   const addRow = () => {
@@ -98,6 +144,11 @@ export default function DataView({ items, setItems }) {
         <p className="panel-sub" style={{ padding: "0 18px 12px" }}>
           {importMessage || `${items.filter((row) => row.elasticityIsCausal || ["product_iv", "pooled_iv"].includes(row.elasticitySource)).length}/${items.length} rows have causal elasticity. Manual or correlational rows remain visible but are not repriced while the causal-evidence gate is enabled.`}
         </p>
+        {invalidCells.size > 0 ? (
+          <p className="panel-sub cell-error-note" style={{ padding: "0 18px 12px" }}>
+            {invalidCells.size} cell{invalidCells.size === 1 ? "" : "s"} highlighted in red {invalidCells.size === 1 ? "has" : "have"} an invalid value and {invalidCells.size === 1 ? "is" : "are"} still using the last valid number — hover a cell for the specific rule.
+          </p>
+        ) : null}
         <div className="tbl-scroll">
           <table className="tbl editable">
             <thead>
@@ -109,11 +160,21 @@ export default function DataView({ items, setItems }) {
             <tbody>
               {items.map((it, idx) => (
                 <tr key={idx}>
-                  {cols.map((c) => (
-                    <td key={c[0]} className={c[2] === "n" ? "r" : ""}>
-                      <input className={"cell-input" + (c[2] === "n" ? " mono r" : "")} value={it[c[0]]} onChange={(e) => update(idx, c[0], e.target.value)} />
-                    </td>
-                  ))}
+                  {cols.map((c) => {
+                    const ck = cellKey(idx, c[0]);
+                    const invalid = invalidCells.has(ck);
+                    const rule = NUMERIC_FIELD_RULES[c[0]] || DEFAULT_NUMERIC_RULE;
+                    return (
+                      <td key={c[0]} className={c[2] === "n" ? "r" : ""}>
+                        <input
+                          className={"cell-input" + (c[2] === "n" ? " mono r" : "") + (invalid ? " invalid" : "")}
+                          value={invalid ? drafts[ck] : it[c[0]]}
+                          onChange={(e) => update(idx, c[0], e.target.value)}
+                          title={invalid ? `${c[1]} ${rule.message} — keeping the previous value until this is fixed` : undefined}
+                        />
+                      </td>
+                    );
+                  })}
                   <td><button className="row-del" onClick={() => del(idx)} title="Remove">×</button></td>
                 </tr>
               ))}
