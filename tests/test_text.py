@@ -51,6 +51,12 @@ class TestNormalizeCategoryKey:
         assert normalize_category_key("Personal Care Products") == "personal_care"
         assert normalize_category_key("PersonalCare") == "personal_care"
 
+    def test_unlisted_plural_stems_to_singular(self):
+        """Categories with no explicit alias still normalize via plural stemming."""
+        assert normalize_category_key("hobbies") == "hobby"
+        assert normalize_category_key("categories") == "category"
+        assert normalize_category_key("Snacks") == "snack"
+
     def test_whitespace_handling(self):
         """Test that leading/trailing whitespace is handled."""
         assert normalize_category_key("  Beverages  ") == "beverage"

@@ -9,6 +9,7 @@ import numpy as np
 import pandas as pd
 
 from src.data.validation import validate_required_columns
+from src.features.text import normalize_category_key  # noqa: F401 (re-exported)
 
 
 def normalize_name(value: object) -> str:
@@ -24,38 +25,6 @@ def normalize_name(value: object) -> str:
     ).strip("_")
 
     return normalized_value or "unknown"
-
-
-def normalize_category_key(value: object) -> str:
-    """Create a consistent category key for matching datasets."""
-
-    key = normalize_name(value)
-
-    aliases = {
-        "foods": "food",
-        "food_and_beverage": "food",
-        "food_beverage": "food",
-        "groceries": "food",
-        "grocery": "food",
-        "households": "household",
-        "household_products": "household",
-        "hobbies": "hobby",
-    }
-
-    if key in aliases:
-        return aliases[key]
-
-    if key.endswith("ies") and len(key) > 4:
-        key = key[:-3] + "y"
-
-    elif (
-        key.endswith("s")
-        and not key.endswith("ss")
-        and len(key) > 3
-    ):
-        key = key[:-1]
-
-    return key
 
 
 def safe_divide(

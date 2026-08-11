@@ -12,7 +12,6 @@ from src.features.engineering import (
     add_price_features,
     add_promotion_features,
     add_rolling_features,
-    normalize_category_key,
     normalize_name,
     safe_divide,
 )
@@ -41,26 +40,6 @@ class TestNormalizeName:
         """Test that empty string returns 'unknown'."""
         assert normalize_name("") == "unknown"
         assert normalize_name("   ") == "unknown"
-
-
-class TestNormalizeCategoryKey:
-    """Test normalize_category_key function."""
-
-    def test_basic_normalization(self):
-        """Test basic category normalization."""
-        assert normalize_category_key("Foods") == "food"
-        assert normalize_category_key("Households") == "household"
-
-    def test_plural_to_singular(self):
-        """Test conversion of plurals to singular."""
-        assert normalize_category_key("hobbies") == "hobby"
-        assert normalize_category_key("categories") == "category"
-
-    def test_aliases_applied(self):
-        """Test that aliases are properly applied."""
-        assert normalize_category_key("groceries") == "food"
-        assert normalize_category_key("grocery") == "food"
-        assert normalize_category_key("food_and_beverage") == "food"
 
 
 class TestSafeDivide:

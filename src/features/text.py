@@ -63,7 +63,20 @@ def normalize_category_key(value: object) -> str:
         "personalcare": "personal_care",
     }
 
-    return aliases.get(
-        normalized_value,
-        normalized_value,
-    )
+    if normalized_value in aliases:
+        return aliases[normalized_value]
+
+    # No explicit alias: fall back to stripping an ordinary plural so
+    # unlisted categories ("Hobbies", "Categories") still normalize
+    # consistently instead of staying pluralized.
+    if normalized_value.endswith("ies") and len(normalized_value) > 4:
+        return normalized_value[:-3] + "y"
+
+    if (
+        normalized_value.endswith("s")
+        and not normalized_value.endswith("ss")
+        and len(normalized_value) > 3
+    ):
+        return normalized_value[:-1]
+
+    return normalized_value
