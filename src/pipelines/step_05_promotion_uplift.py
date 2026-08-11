@@ -27,7 +27,7 @@ from src.config import (
     RANDOM_STATE,
 )
 from src.data import load_csv, save_csv, save_model, validate_dataframe
-from src.features import add_calendar_features
+from src.features import add_calendar_features, safe_divide
 from src.models import (
     PreparedPromotionData,
     calculate_propensity_scores,
@@ -448,9 +448,11 @@ def main() -> None:
 
     # Uplift as a fraction of baseline (control) demand -- the
     # multiplicative rate consumed by the pricing optimizer downstream.
-    promotion_uplift_by_product["promotion_uplift_rate"] = (
-        promotion_uplift_by_product["predicted_uplift_mean"]
-        / promotion_uplift_by_product["predicted_control_outcome_mean"]
+    # safe_divide avoids +/-inf for a low-volume product whose predicted
+    # control outcome is at or near zero.
+    promotion_uplift_by_product["promotion_uplift_rate"] = safe_divide(
+        promotion_uplift_by_product["predicted_uplift_mean"],
+        promotion_uplift_by_product["predicted_control_outcome_mean"],
     )
     promotion_uplift_by_product["promotion_model_is_reliable"] = (
         model_is_reliable
@@ -480,9 +482,9 @@ def main() -> None:
         for col in promotion_uplift_by_store.columns.values
     ]
 
-    promotion_uplift_by_store["promotion_uplift_rate"] = (
-        promotion_uplift_by_store["predicted_uplift_mean"]
-        / promotion_uplift_by_store["predicted_control_outcome_mean"]
+    promotion_uplift_by_store["promotion_uplift_rate"] = safe_divide(
+        promotion_uplift_by_store["predicted_uplift_mean"],
+        promotion_uplift_by_store["predicted_control_outcome_mean"],
     )
 
     print(f"  Products: {len(promotion_uplift_by_product)}")
