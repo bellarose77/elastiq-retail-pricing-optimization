@@ -59,7 +59,7 @@ export default function App() {
       </header>
       <div className="workspace-body">
         {tab === "portfolio" && <PortfolioView result={result} onSelectItem={setSelectedId} onNavigate={setTab}/>} 
-        {tab === "sku" && <SkuDetailView items={items} cfg={cfg} tech={tech} selectedId={selectedId} setSelectedId={setSelectedId}/>} 
+        {tab === "sku" && <SkuDetailView items={items} cfg={cfg} result={result} selectedId={selectedId} setSelectedId={setSelectedId}/>}
         {tab === "sensitivity" && <SensitivityView items={items} cfg={cfg} tech={tech}/>} 
         {tab === "validation" && <ValidationView result={result}/>} 
         {tab === "techniques" && <TechniquesView items={items} cfg={cfg} tech={tech} setTech={setTech}/>} 

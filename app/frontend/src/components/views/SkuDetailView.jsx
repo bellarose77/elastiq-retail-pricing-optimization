@@ -1,18 +1,22 @@
 import { useState, useMemo, useEffect } from "react";
-import { optimizeItem } from "../../lib/engine.js";
 import { fmtMoney, fmtNum, fmtPrice, fmtPct, fmtPctPlain } from "../../lib/format.js";
 import { Toggle, DeltaPill, ActionTag } from "../ui.jsx";
 import { ResponseCurve } from "../charts.jsx";
 
-export default function SkuDetailView({ items, cfg, tech, selectedId, setSelectedId }) {
+// `result` is App.jsx's optimizePortfolio(items, cfg, tech) output, reused
+// here rather than recomputed per item, so this view's recommendations
+// always match Portfolio Overview, Validation, Report and the exported PDF
+// -- including the portfolio-level capacity-shadow-price and cannibalization
+// passes that a standalone per-item optimize call would skip.
+export default function SkuDetailView({ items, cfg, result, selectedId, setSelectedId }) {
   const [sortKey, setSortKey] = useState("profitChange");
   const [dir, setDir] = useState(-1);
   const [promoView, setPromoView] = useState(false);
   const [whatIf, setWhatIf] = useState(null);
-  const rows = useMemo(() => items.map((it) => optimizeItem(it, cfg, tech)), [items, cfg, tech]);
+  const rows = result.rows;
   const sorted = useMemo(() => [...rows].sort((a, b) => (a[sortKey] > b[sortKey] ? dir : -dir)), [rows, sortKey, dir]);
   const selected = items.find((i) => i.itemId === selectedId) || items[0];
-  const selRes = useMemo(() => (selected ? optimizeItem(selected, cfg, tech) : null), [selected, cfg, tech]);
+  const selRes = selected ? rows.find((r) => r.itemId === selected.itemId) : null;
   useEffect(() => { setWhatIf(null); }, [selectedId]);
 
   const th = (key, label, right) => (
@@ -37,7 +41,7 @@ export default function SkuDetailView({ items, cfg, tech, selectedId, setSelecte
             <Toggle label="Model promotion" checked={promoView} onChange={setPromoView} />
           </div>
           <div className="detail-grid">
-            <ResponseCurve item={selected} cfg={cfg} tech={tech} promoOn={promoView} whatIf={whatIf} setWhatIf={setWhatIf} />
+            <ResponseCurve item={selected} cfg={cfg} res={selRes} promoOn={promoView} whatIf={whatIf} setWhatIf={setWhatIf} />
             <div className="scenario-cards">
               {[
                 { label: "Current", price: selected.currentPrice, s: selRes._scenarios.current, cls: "sc-current" },

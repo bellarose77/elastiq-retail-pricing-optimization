@@ -1,15 +1,20 @@
 import React, { useMemo, useRef, useEffect, useCallback } from "react";
-import { responseCurve, optimizeItem, evaluateCandidate, DEFAULT_CONFIG, clamp, isFin } from "../lib/engine.js";
+import { responseCurve, evaluateCandidate, DEFAULT_CONFIG, clamp, isFin } from "../lib/engine.js";
 import { fmtMoney, fmtNum, fmtPrice, fmtPct, fmtPctPlain } from "../lib/format.js";
 
 /* ==========================================================================
    Response curve — draggable what-if
+
+   `res` is the item's already-computed portfolio row (from optimizePortfolio),
+   not recomputed here via optimizeItem. Recomputing independently used to
+   skip the portfolio-level cannibalization and capacity-shadow-price passes,
+   so this chart's recommended-price marker could disagree with every other
+   view for the same item.
    ========================================================================== */
-export function ResponseCurve({ item, cfg, tech, promoOn, whatIf, setWhatIf }) {
+export function ResponseCurve({ item, cfg, res, promoOn, whatIf, setWhatIf }) {
   const W = 720, H = 340, padL = 58, padR = 54, padT = 24, padB = 42;
   const svgRef = useRef(null);
   const curve = useMemo(() => responseCurve(item, cfg, promoOn), [item, cfg, promoOn]);
-  const res = useMemo(() => optimizeItem(item, cfg, tech), [item, cfg, tech]);
 
   const prices = curve.map((d) => d.price);
   const xMin = Math.min(...prices), xMax = Math.max(...prices);
