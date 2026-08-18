@@ -21,29 +21,38 @@ capacity-solver, and validation counters appear live. The pipeline uses real
 computations and adds no artificial waiting. Completed runs can be reopened or
 downloaded as detailed JSON.
 
-## One-click start
+## Quick start
 
-Windows users can double-click `start.bat`.
+**Prerequisite:** [Node.js 18 or newer](https://nodejs.org) — that's the only thing you need. The app ships with demonstration data already built in.
 
-Linux and macOS users can run:
+1. Download or clone this repository.
+2. Start the app:
+   - **Windows** — double-click `start.bat`
+   - **macOS / Linux** — open a terminal in this folder and run:
+     ```sh
+     chmod +x start.sh
+     ./start.sh
+     ```
+3. Your browser opens automatically at `http://127.0.0.1:5173`. The first launch takes about a minute to install dependencies; every launch after that is instant.
 
-```sh
-chmod +x start.sh
-./start.sh
-```
+Keep the terminal/command window open while you use the app — closing it stops the app. Press `Ctrl+C` in that window to stop it yourself.
 
-The first launch installs web dependencies and then opens
-`http://127.0.0.1:5173`. The packaged application already contains demonstration
-data. To refresh all analytical outputs before launch, install Python 3.10 or
-newer and use `start.bat --refresh-data` or `./start.sh --refresh-data`.
+### What you'll see
 
-After launch, the **Test Case Runner** opens automatically. Select Small,
-Medium, or Large and choose **Run all six approaches**.
-Open **Data** to see the initial analysis of completeness, pricing, margin,
-demand, inventory pressure, causal coverage, promotion readiness, and category
-structure before optimization.
+The app opens on the **Test Case Runner**. Pick a size (Small, Medium, or Large) and click **Run all six approaches** to watch the full pricing engine run live. Open the **Data** tab to see the underlying analysis — completeness, pricing, margin, demand, inventory pressure, causal coverage, promotion readiness, and category structure — before optimization runs.
 
-See `RUN_ME_FIRST.txt` for the shortest setup instructions.
+### If something goes wrong
+
+| Message | Fix |
+|---|---|
+| "Node.js is not installed" | Install it from [nodejs.org](https://nodejs.org), then run the start script again. |
+| "Port 5173 is already in use" | Close the earlier ELASTIQ window/terminal, then run the start script again. |
+
+### Optional: regenerate the data
+
+The bundled demonstration data is enough to run the app. If you want to rerun all eight analytical stages yourself, install Python 3.10+ and run `start.bat --refresh-data` (Windows) or `./start.sh --refresh-data` (macOS/Linux) instead of the plain command above.
+
+See `RUN_ME_FIRST.txt` for this same guide in plain text.
 
 ## Team documentation
 
