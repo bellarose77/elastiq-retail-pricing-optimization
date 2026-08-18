@@ -2,6 +2,10 @@
 
 > A spreadsheet of what happened, turned into a defensible answer to one question: **what should this item cost tomorrow?**
 
+### 👉 [**Open the app: http://127.0.0.1:5173**](http://127.0.0.1:5173)
+
+*(Start it first with `start.bat` / `start.sh` — see [Quick start](#quick-start) below — then click the link above, or it will open automatically.)*
+
 ELASTIQ is a retail pricing decision studio. It validates commercial data,
 estimates causal price sensitivity, evaluates promotions, forecasts next-period
 demand, structures recent market evidence, and recommends a feasible price with
