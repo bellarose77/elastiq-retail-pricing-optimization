@@ -2,9 +2,9 @@
 
 > A spreadsheet of what happened, turned into a defensible answer to one question: **what should this item cost tomorrow?**
 
-### 👉 [**Open the app: http://127.0.0.1:5173**](http://127.0.0.1:5173)
+### 👉 Start the app: double-click `start.bat` (Windows) or run `./start.sh` (macOS/Linux)
 
-*(Start it first with `start.bat` / `start.sh` — see [Quick start](#quick-start) below — then click the link above, or it will open automatically.)*
+*(See [Quick start](#quick-start) below — the app opens automatically in your browser once it's ready.)*
 
 ELASTIQ is a retail pricing decision studio. It validates commercial data,
 estimates causal price sensitivity, evaluates promotions, forecasts next-period
@@ -37,7 +37,7 @@ downloaded as detailed JSON.
      chmod +x start.sh
      ./start.sh
      ```
-3. Your browser opens automatically at `http://127.0.0.1:5173`. The first launch takes about a minute to install dependencies; every launch after that is instant.
+3. Your browser opens automatically once the app is ready. The first launch takes about a minute to install dependencies; every launch after that is instant.
 
 Keep the terminal/command window open while you use the app — closing it stops the app. Press `Ctrl+C` in that window to stop it yourself.
 
