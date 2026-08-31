@@ -1,16 +1,29 @@
 /* Client for the ELASTIQ pricing API (service-pricing-optimization).
 
    Base URL is configurable via VITE_PRICING_API_BASE_URL (see
-   .env.example), defaulting to the service's own local default port. The
-   app never hard-fails if the service is unreachable -- see App.jsx and
-   DataView.jsx, which both fall back to client-side computation / the
-   bundled demo snapshot with a clear error surfaced to the user, so the
-   app keeps working with zero setup (including when hosted with no
-   backend at all, e.g. GitHub Pages). */
+   .env.example), read at build time by Vite. It defaults to the
+   service's own local default port ONLY in dev mode (`npm run dev`) --
+   a production build (`npm run build`, including the GitHub Pages
+   deploy) never bakes a localhost URL into the bundle. With no base URL
+   configured, calls fail fast with a clear "not configured" message
+   instead of firing a request at the wrong origin.
 
-const API_BASE = (import.meta.env.VITE_PRICING_API_BASE_URL || "http://127.0.0.1:8000").replace(/\/$/, "");
+   The app never hard-fails if the service is unreachable or
+   unconfigured -- see App.jsx and DataView.jsx, which both fall back to
+   client-side computation / the bundled demo snapshot with a clear
+   error surfaced to the user, so the app keeps working with zero setup
+   (including when hosted with no backend at all, e.g. GitHub Pages). */
+
+const rawApiBase = import.meta.env.VITE_PRICING_API_BASE_URL || (import.meta.env.DEV ? "http://127.0.0.1:8000" : "");
+const API_BASE = rawApiBase.replace(/\/$/, "");
 
 async function getJson(path) {
+  if (!API_BASE) {
+    throw new Error(
+      "No pricing API configured for this deployment. Set VITE_PRICING_API_BASE_URL at build time to enable live data."
+    );
+  }
+
   let response;
   try {
     response = await fetch(`${API_BASE}${path}`);

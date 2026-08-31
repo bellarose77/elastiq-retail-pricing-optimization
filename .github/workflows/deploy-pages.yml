@@ -1,3 +1,11 @@
+# Prerequisite (one-time, repo admin only, not fixable from this file):
+# GitHub Pages must be enabled with Source = "GitHub Actions" under
+# Settings -> Pages -> Build and deployment. Until that's done, the
+# "Configure GitHub Pages" step below fails immediately (the Pages API
+# 404s for a repo with Pages never enabled) regardless of anything else
+# in this workflow -- confirmed by comparing failing runs across commits,
+# all the way back to before the app/frontend restructuring; every run
+# succeeds through "Prepare GitHub Pages site" and only fails there.
 name: Deploy website and ELASTIQ demo
 
 on:
@@ -35,6 +43,17 @@ jobs:
 
       - name: Build ELASTIQ frontend
         working-directory: app/frontend
+        # No pricing API is deployed alongside this static site, so
+        # VITE_PRICING_API_BASE_URL is intentionally left unset here --
+        # lib/api.js only defaults to a localhost URL in dev mode
+        # (`npm run dev`), never in a production build, so this ships
+        # with no live-data backend configured rather than a dead
+        # localhost reference. To point a future deploy of this site at
+        # a real, reachable HTTPS pricing API, set the repository
+        # variable PRICING_API_BASE_URL (Settings -> Secrets and
+        # variables -> Actions -> Variables) -- no workflow edit needed.
+        env:
+          VITE_PRICING_API_BASE_URL: ${{ vars.PRICING_API_BASE_URL }}
         run: npm run build
 
       - name: Prepare GitHub Pages site
