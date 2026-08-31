@@ -20,7 +20,7 @@ def test_health():
 
 
 def test_items_lists_real_features():
-    response = client.get("/items")
+    response = client.get("/api/v1/items")
     assert response.status_code == 200
     items = response.json()
     assert len(items) == 50  # 10 products x 5 stores in the bundled dataset
@@ -36,7 +36,7 @@ def test_items_lists_real_features():
 
 
 def test_features_known_item():
-    response = client.post("/features", json={"item_ids": ["P001_S001"]})
+    response = client.post("/api/v1/features", json={"item_ids": ["P001_S001"]})
     assert response.status_code == 200
     body = response.json()
     assert body["not_found"] == []
@@ -46,7 +46,7 @@ def test_features_known_item():
 
 def test_features_unknown_item_is_reported_not_found():
     response = client.post(
-        "/features", json={"item_ids": ["P001_S001", "NOT_A_REAL_ITEM"]}
+        "/api/v1/features", json={"item_ids": ["P001_S001", "NOT_A_REAL_ITEM"]}
     )
     assert response.status_code == 200
     body = response.json()
@@ -55,12 +55,12 @@ def test_features_unknown_item_is_reported_not_found():
 
 
 def test_features_rejects_empty_request():
-    response = client.post("/features", json={"item_ids": []})
+    response = client.post("/api/v1/features", json={"item_ids": []})
     assert response.status_code == 422
 
 
 def test_product_features_aggregates_across_stores():
-    response = client.get("/products/features")
+    response = client.get("/api/v1/products/features")
     assert response.status_code == 200
     products = response.json()
     assert len(products) == 10
@@ -70,7 +70,7 @@ def test_product_features_aggregates_across_stores():
 
 
 def test_refresh_reloads_artifact():
-    response = client.post("/refresh")
+    response = client.post("/api/v1/refresh")
     assert response.status_code == 200
     body = response.json()
     assert body["status"] == "refreshed"

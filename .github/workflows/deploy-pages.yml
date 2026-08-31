@@ -43,17 +43,20 @@ jobs:
 
       - name: Build ELASTIQ frontend
         working-directory: app/frontend
-        # No pricing API is deployed alongside this static site, so
-        # VITE_PRICING_API_BASE_URL is intentionally left unset here --
+        # No pricing or feature API is deployed alongside this static
+        # site by default, so VITE_PRICING_API_BASE_URL and
+        # VITE_FEATURE_API_BASE_URL are intentionally left unset here --
         # lib/api.js only defaults to a localhost URL in dev mode
         # (`npm run dev`), never in a production build, so this ships
         # with no live-data backend configured rather than a dead
         # localhost reference. To point a future deploy of this site at
-        # a real, reachable HTTPS pricing API, set the repository
-        # variable PRICING_API_BASE_URL (Settings -> Secrets and
-        # variables -> Actions -> Variables) -- no workflow edit needed.
+        # real, reachable HTTPS APIs, set the repository variables
+        # PRICING_API_BASE_URL and/or FEATURE_API_BASE_URL (Settings ->
+        # Secrets and variables -> Actions -> Variables) -- no workflow
+        # edit needed.
         env:
           VITE_PRICING_API_BASE_URL: ${{ vars.PRICING_API_BASE_URL }}
+          VITE_FEATURE_API_BASE_URL: ${{ vars.FEATURE_API_BASE_URL }}
         run: npm run build
 
       - name: Prepare GitHub Pages site

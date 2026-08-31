@@ -33,11 +33,11 @@ needed for fresh numbers.
 
 | Method | Path | Description |
 |---|---|---|
-| GET | `/health` | Liveness check. |
-| GET | `/items` | Every `(product, store)` item's generated features. |
-| POST | `/features` | Look up requested `item_id`s (e.g. `P001_S001`); body `{"item_ids": [...]}`. Unknown ids come back under `not_found`. |
-| GET | `/products/features` | One feature summary per product, aggregated across its stores. |
-| POST | `/refresh` | Reload the artifact from disk, e.g. after a new pipeline run. |
+| GET | `/health` | Liveness check. Deliberately unversioned -- this is the path a hosting platform's health check/orchestrator polls, and shouldn't move if the resource API below ever needs a `/api/v2`. |
+| GET | `/api/v1/items` | Every `(product, store)` item's generated features. |
+| POST | `/api/v1/features` | Look up requested `item_id`s (e.g. `P001_S001`); body `{"item_ids": [...]}`. Unknown ids come back under `not_found`. |
+| GET | `/api/v1/products/features` | One feature summary per product, aggregated across its stores. |
+| POST | `/api/v1/refresh` | Reload the artifact from disk, e.g. after a new pipeline run. |
 
 Each item's features include retrieval diagnostics
 (`rag_evidence_count`, `rag_max/mean/min_similarity`), the retrieved
@@ -52,11 +52,13 @@ seasonality, premium, value) rolling up into `net_demand_signal`.
 ```
 app/
   main.py              FastAPI app: creates the app, configures CORS, mounts routes.
-  config.py            Environment-driven settings.
+  config.py            Environment-driven settings (see Configuration below).
   schemas.py           Pydantic request/response models.
   api/
     routes.py          HTTP handlers. Thin: validate via schemas.py, delegate to
-                        services/feature_service.py.
+                        services/feature_service.py. Two routers: an unversioned
+                        health_router (GET /health) and router, mounted under
+                        /api/v1, for every resource endpoint.
   services/
     artifact_store.py  Loads and caches the feature columns of
                         retail_with_rag_features.csv.
@@ -87,8 +89,10 @@ Environment variables, prefixed `FEATURE_API_`:
 
 | Variable | Default | Purpose |
 |---|---|---|
-| `FEATURE_API_CORS_ALLOW_ORIGINS` | `http://127.0.0.1:5173,http://localhost:5173` | Comma-separated list of allowed frontend origins. |
+| `FEATURE_API_CORS_ALLOW_ORIGINS` | `http://127.0.0.1:5173,http://localhost:5173,https://bellarose77.github.io` | Comma-separated allowlist of frontend origins. Covers local dev and the deployed GitHub Pages frontend out of the box; override to add another origin (never set to `*` in production). |
 | `FEATURE_API_PROCESSED_DIR` | `<repo>/data/processed` | Where to read the feature artifact from. |
+
+See `.env.example` for a copy-pasteable local override file.
 
 ## Tests
 
@@ -111,6 +115,56 @@ docker run --rm -p 8002:8002 \
   -v "$(pwd)/data/processed:/srv/data/processed:ro" \
   elastiq-feature-api
 ```
+
+The volume mount keeps served features in sync with whatever the batch
+pipeline most recently produced, without rebuilding the image. Omit it
+to use the `data/` snapshot baked into the image at build time.
+
+## Frontend integration
+
+`app/frontend/src/lib/api.js` exposes `fetchLiveProductFeatures()` for
+this service's `/api/v1/products/features`, and `SkuDetailView` uses it
+to show a per-product market-evidence panel (evidence count, weighted
+impact score, net demand signal) for the selected item, loaded on
+demand. Point it at a non-default URL with `VITE_FEATURE_API_BASE_URL`
+(see the frontend's own `.env.example`). CORS must allow the frontend's
+origin (see Configuration above); the defaults already cover both the
+Vite dev server and the deployed GitHub Pages frontend.
+
+## Deployment
+
+GitHub Pages only serves static files, so it cannot run this service --
+it needs a separate host that can run a container and keep it
+listening. The image already builds and runs with no external database
+or required volume (see Docker above: the `data/` snapshot baked in at
+build time is enough to serve demo features), so any container host
+works; see `service-pricing-optimization/README.md`'s Deployment section
+for the recommended hosts (Render, Fly.io, Cloud Run) -- the same
+guidance applies here with this service's own Dockerfile path and port.
+
+### Required configuration on the chosen host
+
+| Setting | Value |
+|---|---|
+| Dockerfile path | `service-feature-generation/Dockerfile` |
+| Build context | repository root (`.`) |
+| Container port | `$PORT` (platform-injected; defaults to `8002` if unset) |
+| Startup command | already set by the Dockerfile's `CMD`; leave blank unless the platform requires one explicitly (`uvicorn app.main:app --host 0.0.0.0 --port $PORT`) |
+| Health check path | `/health` |
+| `FEATURE_API_CORS_ALLOW_ORIGINS` | defaults already include `https://bellarose77.github.io`; only set this if deploying under a different frontend origin |
+
+### Once it's deployed
+
+1. Note the HTTPS URL the host assigns (e.g. `https://elastiq-feature-api.onrender.com`).
+2. Set the GitHub repository variable `FEATURE_API_BASE_URL` to that URL
+   (Settings -> Secrets and variables -> Actions -> Variables) -- the
+   `deploy-pages.yml` workflow already reads it into
+   `VITE_FEATURE_API_BASE_URL` at build time, no workflow edit needed.
+3. Re-run the Pages workflow (or push to `main`) so the frontend rebuilds
+   against the live API URL.
+4. If the API's own host origin differs from `https://bellarose77.github.io`
+   (a custom domain, a fork), also set `FEATURE_API_CORS_ALLOW_ORIGINS` on
+   the API host to match.
 
 ## Relationship to the other services
 

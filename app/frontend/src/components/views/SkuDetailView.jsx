@@ -2,6 +2,7 @@ import { useState, useMemo, useEffect } from "react";
 import { fmtMoney, fmtNum, fmtPrice, fmtPct, fmtPctPlain } from "../../lib/format.js";
 import { Toggle, DeltaPill, ActionTag } from "../ui.jsx";
 import { ResponseCurve } from "../charts.jsx";
+import { fetchLiveProductFeatures } from "../../lib/api.js";
 
 // `result` is App.jsx's optimizePortfolio(items, cfg, tech) output, reused
 // here rather than recomputed per item, so this view's recommendations
@@ -18,6 +19,22 @@ export default function SkuDetailView({ items, cfg, result, selectedId, setSelec
   const selected = items.find((i) => i.itemId === selectedId) || items[0];
   const selRes = selected ? rows.find((r) => r.itemId === selected.itemId) : null;
   useEffect(() => { setWhatIf(null); }, [selectedId]);
+
+  // Fetched once (not per selected item) from service-feature-generation,
+  // same "fetch the whole product-level rollup, look up by itemId" pattern
+  // App.jsx uses for live pricing recommendations. Silently unavailable
+  // (no alert) if the service isn't configured/reachable -- this panel is
+  // best-effort market context, not part of the price decision itself.
+  const [liveFeatures, setLiveFeatures] = useState(null);
+  const [liveFeaturesError, setLiveFeaturesError] = useState("");
+  useEffect(() => {
+    let cancelled = false;
+    fetchLiveProductFeatures()
+      .then((data) => { if (!cancelled) setLiveFeatures(new Map(data.map((f) => [f.itemId, f]))); })
+      .catch((err) => { if (!cancelled) setLiveFeaturesError(err.message); });
+    return () => { cancelled = true; };
+  }, []);
+  const evidence = selected && liveFeatures ? liveFeatures.get(selected.itemId) : null;
 
   const th = (key, label, right) => (
     <th
@@ -69,6 +86,16 @@ export default function SkuDetailView({ items, cfg, result, selectedId, setSelec
             {selRes.inventoryBinding ? <span className="gr warn">Inventory-bound</span> : null}
             {selRes.competitorBinding ? <span className="gr warn">Competitor-capped</span> : null}
           </div>
+          {evidence ? (
+            <div className="guardrail-strip">
+              <span className="gr">Market evidence <b className="mono">{evidence.ragEvidenceCount}</b></span>
+              <span className="gr">Weighted impact <b className="mono">{fmtNum(evidence.ragWeightedImpactScore, 3)}</b></span>
+              <span className="gr">Net demand signal <b className="mono">{evidence.netDemandSignal}</b></span>
+              <span className="gr">Stores <b className="mono">{evidence.storeCount}</b></span>
+            </div>
+          ) : liveFeaturesError ? (
+            <p className="panel-sub" style={{ padding: "8px 18px 0" }}>Live market evidence unavailable: {liveFeaturesError}</p>
+          ) : null}
         </div>
       ) : null}
       <div className="panel">

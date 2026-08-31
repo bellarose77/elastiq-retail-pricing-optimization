@@ -40,7 +40,14 @@ class Settings(BaseSettings):
         "pipeline's most recent RAG feature-extraction artifact."
     )
 
-    cors_allow_origins: str = "http://127.0.0.1:5173,http://localhost:5173"
+    # See service-pricing-optimization/app/config.py's identically-named
+    # field for why this defaults to a fixed allowlist (never "*") and
+    # already covers both the Vite dev server and the deployed GitHub
+    # Pages frontend.
+    cors_allow_origins: str = (
+        "http://127.0.0.1:5173,http://localhost:5173,"
+        "https://bellarose77.github.io"
+    )
 
     processed_dir: Path = _DEFAULT_PROCESSED_DIR
 

@@ -34,4 +34,13 @@ WORKDIR /srv/service-feature-generation
 
 EXPOSE 8002
 
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8002"]
+# Most container hosts (Render, Railway, Cloud Run...) assign the listen
+# port at runtime via $PORT and route to whatever that is; this defaults
+# to 8002 so `docker run -p 8002:8002` above still works unchanged when
+# $PORT isn't set (e.g. plain local `docker run`).
+ENV PORT=8002
+
+HEALTHCHECK --interval=30s --timeout=3s --start-period=10s \
+    CMD python -c "import os,urllib.request; urllib.request.urlopen(f'http://localhost:{os.environ.get(\"PORT\", 8002)}/health', timeout=2)" || exit 1
+
+CMD uvicorn app.main:app --host 0.0.0.0 --port ${PORT}
