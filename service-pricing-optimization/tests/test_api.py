@@ -21,7 +21,7 @@ def test_health():
 
 
 def test_items_lists_real_decision_units():
-    response = client.get("/items")
+    response = client.get("/api/v1/items")
     assert response.status_code == 200
     items = response.json()
     assert len(items) == 50  # 10 products x 5 stores in the bundled dataset
@@ -36,7 +36,7 @@ def test_items_lists_real_decision_units():
 
 def test_recommendations_known_item_matches_batch_pipeline():
     response = client.post(
-        "/recommendations", json={"item_ids": ["P001_S001"]}
+        "/api/v1/recommendations", json={"item_ids": ["P001_S001"]}
     )
     assert response.status_code == 200
     body = response.json()
@@ -55,7 +55,7 @@ def test_recommendations_known_item_matches_batch_pipeline():
 
 def test_recommendations_unknown_item_is_reported_not_found():
     response = client.post(
-        "/recommendations",
+        "/api/v1/recommendations",
         json={"item_ids": ["P001_S001", "NOT_A_REAL_ITEM"]},
     )
     assert response.status_code == 200
@@ -65,12 +65,12 @@ def test_recommendations_unknown_item_is_reported_not_found():
 
 
 def test_recommendations_rejects_empty_request():
-    response = client.post("/recommendations", json={"item_ids": []})
+    response = client.post("/api/v1/recommendations", json={"item_ids": []})
     assert response.status_code == 422
 
 
 def test_products_matches_bundled_demo_data_shape():
-    response = client.get("/products")
+    response = client.get("/api/v1/products")
     assert response.status_code == 200
     products = response.json()
     assert len(products) == 10
@@ -86,7 +86,7 @@ def test_products_matches_bundled_demo_data_shape():
 
 
 def test_product_recommendations_aggregates_across_stores():
-    response = client.get("/products/recommendations")
+    response = client.get("/api/v1/products/recommendations")
     assert response.status_code == 200
     products = response.json()
     assert len(products) == 10
@@ -108,7 +108,7 @@ def test_product_recommendations_aggregates_across_stores():
 
 
 def test_refresh_reloads_artifacts():
-    response = client.post("/refresh")
+    response = client.post("/api/v1/refresh")
     assert response.status_code == 200
     body = response.json()
     assert body["status"] == "refreshed"

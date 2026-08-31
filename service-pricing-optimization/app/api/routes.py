@@ -5,6 +5,13 @@ Thin by design: every handler here does request validation (via
 all actual work, and maps its results/errors onto HTTP responses. No
 pricing logic, DataFrame handling, or filesystem access belongs in this
 module.
+
+Two routers: ``health_router`` is mounted at the root (unversioned) since
+that's the path hosting platforms/orchestrators are typically configured
+to poll and shouldn't move across API versions. ``router`` holds every
+actual resource endpoint and is mounted under ``/api/v1`` (see
+``app/main.py``), so a future breaking change can ship as ``/api/v2``
+alongside it.
 """
 
 from __future__ import annotations
@@ -24,10 +31,11 @@ from app.schemas import (
 from app.services import pricing_service
 from app.services.pricing_service import MissingArtifactsError
 
-router = APIRouter()
+health_router = APIRouter()
+router = APIRouter(prefix="/api/v1")
 
 
-@router.get("/health")
+@health_router.get("/health")
 def health() -> dict[str, str]:
     return {"status": "ok"}
 

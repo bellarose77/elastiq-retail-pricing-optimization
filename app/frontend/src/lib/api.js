@@ -47,7 +47,7 @@ async function getJson(path) {
    computed recommendations the same way scripts/export_demo_data.py
    does, so callers can swap it in directly. */
 export async function fetchLiveProducts() {
-  const products = await getJson("/products");
+  const products = await getJson("/api/v1/products");
 
   if (!Array.isArray(products) || !products.length) {
     throw new Error("Pricing API returned no priceable products.");
@@ -60,7 +60,7 @@ export async function fetchLiveProducts() {
    stores). See app/frontend/src/lib/liveRecommendations.js for how these
    get applied to the client-computed rows for the "grid" technique. */
 export async function fetchLiveProductRecommendations() {
-  const recommendations = await getJson("/products/recommendations");
+  const recommendations = await getJson("/api/v1/products/recommendations");
 
   if (!Array.isArray(recommendations)) {
     throw new Error("Pricing API returned an unexpected response shape.");

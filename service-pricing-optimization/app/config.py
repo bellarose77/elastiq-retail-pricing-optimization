@@ -47,10 +47,17 @@ class Settings(BaseSettings):
         "latest elasticity, causal, uplift, and forecast artifacts."
     )
 
-    # Comma-separated. The frontend is a different origin (typically the
-    # Vite dev server on :5173, or a static hosted build with no backend
-    # at all), so it needs CORS to call this service directly.
-    cors_allow_origins: str = "http://127.0.0.1:5173,http://localhost:5173"
+    # Comma-separated. The frontend is a different origin (the Vite dev
+    # server on :5173, or the deployed GitHub Pages site), so it needs
+    # CORS to call this service directly. Defaults cover both out of the
+    # box; override for a different dev port or a different deployed
+    # frontend origin. Deliberately a fixed allowlist, never "*" -- this
+    # API is a real backend with a live processed-data volume, not a
+    # static site with nothing to protect.
+    cors_allow_origins: str = (
+        "http://127.0.0.1:5173,http://localhost:5173,"
+        "https://bellarose77.github.io"
+    )
 
     # Overridable so the service can point at a data/processed directory
     # that isn't a sibling of this checkout (e.g. a mounted volume in a

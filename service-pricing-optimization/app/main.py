@@ -22,7 +22,7 @@ from __future__ import annotations
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api.routes import router
+from app.api.routes import health_router, router
 from app.config import settings
 
 app = FastAPI(
@@ -44,4 +44,5 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+app.include_router(health_router)
 app.include_router(router)
