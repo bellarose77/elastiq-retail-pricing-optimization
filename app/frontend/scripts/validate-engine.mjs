@@ -1,7 +1,8 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { evaluateCandidate, priceChangeGrid } from "../src/lib/engine.js";
-import { optimizePortfolio, DEFAULT_CONFIG, DEFAULT_TECHNIQUE, roundToPriceEnding } from "../src/lib/engine.js";
+import { optimizePortfolio, optimizeItem, summarizePortfolio, DEFAULT_CONFIG, DEFAULT_TECHNIQUE, roundToPriceEnding } from "../src/lib/engine.js";
+import { applyLiveRecommendation, applyLiveRecommendations } from "../src/lib/liveRecommendations.js";
 import { DEMO_DATA } from "../src/lib/demoData.js";
 import { TECHNIQUE_LIST } from "../src/lib/techniques.js";
 import { parseCSV } from "../src/lib/report.js";
@@ -205,3 +206,92 @@ for (const { input, expected } of fixture.candidates) {
 }
 
 console.log(`Cross-language parity: ${fixture.candidates.length} candidates, ${fixture.grids.length} grids, ${fixture.roundings.length} roundings match the Python engine.`);
+
+/* ---- live pricing-service integration (summarizePortfolio extraction, --- *
+ * liveRecommendations.js's patching) --------------------------------------
+ * ------------------------------------------------------------------------ */
+
+{
+  // summarizePortfolio must be a lossless extraction: computing rows and
+  // aggregating them separately has to match optimizePortfolio doing both.
+  const rows = DEMO_DATA.map((it) => optimizeItem(it, DEFAULT_CONFIG, DEFAULT_TECHNIQUE));
+  const viaSummarize = summarizePortfolio(rows, DEFAULT_CONFIG, DEFAULT_TECHNIQUE, null);
+  const viaPortfolio = optimizePortfolio(DEMO_DATA, DEFAULT_CONFIG, DEFAULT_TECHNIQUE);
+  assert.deepEqual(viaSummarize.exec, viaPortfolio.exec, "summarizePortfolio: exec matches optimizePortfolio");
+  assert.deepEqual(viaSummarize.portfolio, viaPortfolio.portfolio, "summarizePortfolio: portfolio matches optimizePortfolio");
+  assert.deepEqual(viaSummarize.validation, viaPortfolio.validation, "summarizePortfolio: validation matches optimizePortfolio");
+  console.log("summarizePortfolio extraction is lossless against optimizePortfolio.");
+}
+
+{
+  const source = DEMO_DATA[0];
+  const row = optimizeItem(source, DEFAULT_CONFIG, DEFAULT_TECHNIQUE);
+
+  // A row with no matching live recommendation passes through unchanged.
+  const unmatched = applyLiveRecommendation(row, undefined, DEFAULT_CONFIG);
+  assert.strictEqual(unmatched, row, "applyLiveRecommendation: no live match returns the original row");
+
+  // A successful live recommendation overrides the decision fields.
+  const live = {
+    itemId: source.itemId,
+    status: "success",
+    recommendedPrice: row.currentPrice * 1.15,
+    expectedQuantity: 100,
+    expectedRevenue: 500,
+    expectedProfit: 200,
+  };
+  const patched = applyLiveRecommendation(row, live, DEFAULT_CONFIG);
+  assert.equal(patched.recommendedPrice, live.recommendedPrice, "live patch: recommendedPrice overridden");
+  assert.ok(Math.abs(patched.priceChangeRate - 0.15) < 1e-9, "live patch: priceChangeRate derived from live price");
+  assert.equal(patched.recommendationAction, "increase_price", "live patch: action reclassified from the live price");
+  assert.equal(patched.expectedDemand, 100, "live patch: expectedDemand from the service's expectedQuantity");
+  assert.equal(patched._scenarios.recommended.price, live.recommendedPrice, "live patch: recommended scenario price updated");
+  assert.ok(
+    Math.abs(patched._scenarios.recommended.marginRate - (live.recommendedPrice - row.unitCost) / live.recommendedPrice) < 1e-9,
+    "live patch: recommended scenario margin recomputed at the live price"
+  );
+  assert.ok(Math.abs(patched._guardrails.stepHi - row.currentPrice * 1.20) < 1e-6, "live patch: guardrail step-hi uses the service's +20% band");
+  assert.ok(Math.abs(patched._guardrails.stepLo - row.currentPrice * 0.90) < 1e-6, "live patch: guardrail step-lo uses the service's -10% band");
+  assert.equal(patched._live, true, "live patch: row flagged as live-sourced");
+  // "What if" comparison scenarios stay locally computed, untouched.
+  assert.equal(patched._scenarios.revenueMax, row._scenarios.revenueMax, "live patch: revenueMax scenario left to the client engine");
+
+  // A held item (no causal elasticity) is classified as a review, not a move.
+  const heldLive = { ...live, status: "held_no_causal_elasticity", recommendedPrice: row.currentPrice };
+  const heldPatched = applyLiveRecommendation(row, heldLive, DEFAULT_CONFIG);
+  assert.equal(heldPatched.recommendationAction, "review", "live patch: held item classified as review");
+  assert.ok(typeof heldPatched.holdReason === "string" && heldPatched.holdReason.length > 0, "live patch: held item carries a hold reason");
+
+  console.log("Live recommendation patching (lib/liveRecommendations.js) validated.");
+}
+
+{
+  // Full round-trip: patch every DEMO_DATA row with a live recommendation
+  // and re-summarize -- the shape App.jsx renders for the "grid" technique.
+  const rows = DEMO_DATA.map((it) => optimizeItem(it, DEFAULT_CONFIG, DEFAULT_TECHNIQUE));
+  const liveByItemId = new Map(
+    DEMO_DATA.map((it) => {
+      const recommendedPrice = it.currentPrice * 1.05;
+      return [
+        it.itemId,
+        {
+          itemId: it.itemId,
+          status: "success",
+          recommendedPrice,
+          expectedQuantity: it.baselineQuantity,
+          expectedRevenue: recommendedPrice * it.baselineQuantity,
+          expectedProfit: (recommendedPrice - it.unitCost) * it.baselineQuantity,
+        },
+      ];
+    })
+  );
+  const patchedRows = applyLiveRecommendations(rows, liveByItemId, DEFAULT_CONFIG);
+  assert.ok(patchedRows.every((r) => r._live === true), "live round-trip: every row matched a live recommendation");
+  const liveResult = summarizePortfolio(patchedRows, DEFAULT_CONFIG, DEFAULT_TECHNIQUE, null);
+  assert.equal(liveResult.rows.length, DEMO_DATA.length, "live round-trip: row count preserved");
+  assert.ok(Number.isFinite(liveResult.exec.totalExpectedProfit), "live round-trip: total profit finite");
+  assert.ok(Number.isFinite(liveResult.exec.totalExpectedRevenue), "live round-trip: total revenue finite");
+  const overall = liveResult.validation.find((v) => v.check === "All checks passed");
+  assert.ok(Number.isFinite(overall.passRate), "live round-trip: validation pass rate finite");
+  console.log("Live-sourced portfolio summary (App.jsx's grid-technique path) validated end to end.");
+}

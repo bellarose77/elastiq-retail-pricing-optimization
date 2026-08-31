@@ -1,5 +1,7 @@
 import { useState, useMemo, useEffect } from "react";
-import { DEFAULT_CONFIG, DEFAULT_TECHNIQUE, optimizePortfolio } from "./lib/engine.js";
+import { DEFAULT_CONFIG, DEFAULT_TECHNIQUE, optimizePortfolio, summarizePortfolio } from "./lib/engine.js";
+import { applyLiveRecommendations } from "./lib/liveRecommendations.js";
+import { fetchLiveProductRecommendations } from "./lib/api.js";
 import { DEMO_DATA } from "./lib/demoData.js";
 import { TECHNIQUE_MAP } from "./lib/techniques.js";
 import { downloadCSV, recommendationsCSV, generatePDF } from "./lib/report.js";
@@ -36,8 +38,44 @@ export default function App() {
   const [tab, setTab] = useState("live");
   const [selectedId, setSelectedId] = useState(DEMO_DATA[0].itemId);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  // "grid" is the one technique the pricing service also implements (see
+  // src/optimization/pricing.py's optimize_price_portfolio) -- for it,
+  // the workspace calls the live service instead of running the
+  // client-side engine, falling back to the client computation (with a
+  // visible note, see the "Live" chip below) if the service is
+  // unreachable. The other five techniques have no server equivalent and
+  // always run client-side -- see lib/liveRecommendations.js.
+  const [liveStatus, setLiveStatus] = useState("idle"); // idle | loading | live | error
+  const [liveRecommendations, setLiveRecommendations] = useState(null);
+  const [liveError, setLiveError] = useState("");
 
-  const result = useMemo(() => optimizePortfolio(items, cfg, tech), [items, cfg, tech]);
+  useEffect(() => {
+    if (tech.id !== "grid") return;
+    let cancelled = false;
+    setLiveStatus("loading");
+    fetchLiveProductRecommendations()
+      .then((data) => {
+        if (cancelled) return;
+        setLiveRecommendations(data);
+        setLiveStatus("live");
+        setLiveError("");
+      })
+      .catch((err) => {
+        if (cancelled) return;
+        setLiveRecommendations(null);
+        setLiveStatus("error");
+        setLiveError(err.message);
+      });
+    return () => { cancelled = true; };
+  }, [tech.id]);
+
+  const clientResult = useMemo(() => optimizePortfolio(items, cfg, tech), [items, cfg, tech]);
+  const result = useMemo(() => {
+    if (tech.id !== "grid" || !liveRecommendations) return clientResult;
+    const liveByItemId = new Map(liveRecommendations.map((r) => [r.itemId, r]));
+    const rows = applyLiveRecommendations(clientResult.rows, liveByItemId, cfg);
+    return summarizePortfolio(rows, cfg, tech, clientResult.portfolioInfo);
+  }, [clientResult, liveRecommendations, tech, cfg]);
   const meta = TECHNIQUE_MAP[tech.id];
   useEffect(() => { if (!items.find(i => i.itemId === selectedId) && items[0]) setSelectedId(items[0].itemId); }, [items, selectedId]);
   useEffect(() => { const close = e => e.key === "Escape" && setSettingsOpen(false); window.addEventListener("keydown", close); return () => window.removeEventListener("keydown", close); }, []);
@@ -55,7 +93,7 @@ export default function App() {
     <main className="workspace">
       <header className="workspace-head">
         <div className="page-heading"><div className="page-kicker">Pricing decision workspace</div><h1>{title}</h1><p>{subtitle}</p></div>
-        <div className="head-actions">{tab === "live" ? <><div className="run-chip"><span>Execution</span><b>Real browser worker</b></div><button className="btn ghost" onClick={() => setSettingsOpen(true)}><Icon name="settings" size={16}/> Pricing policy</button></> : <><div className="run-chip"><span>Method</span><b>{meta.short}</b></div><button className="btn ghost" onClick={() => setSettingsOpen(true)}><Icon name="settings" size={16}/> Edit run</button><button className="btn" onClick={onPdf}><Icon name="download" size={16}/> Export</button></>}</div>
+        <div className="head-actions">{tab === "live" ? <><div className="run-chip"><span>Execution</span><b>Real browser worker</b></div><button className="btn ghost" onClick={() => setSettingsOpen(true)}><Icon name="settings" size={16}/> Pricing policy</button></> : <><div className="run-chip"><span>Method</span><b>{meta.short}</b></div>{tech.id === "grid" ? <div className={`run-chip${liveStatus === "error" ? " warn" : ""}`} title={liveStatus === "error" ? liveError : "Recommendations for this technique are scored by the pricing service, not computed in the browser."}><span>Source</span><b>{liveStatus === "live" ? "Live pricing service" : liveStatus === "loading" ? "Loading…" : liveStatus === "error" ? "Local fallback" : "Local"}</b></div> : null}<button className="btn ghost" onClick={() => setSettingsOpen(true)}><Icon name="settings" size={16}/> Edit run</button><button className="btn" onClick={onPdf}><Icon name="download" size={16}/> Export</button></>}</div>
       </header>
       <div className="workspace-body">
         {tab === "portfolio" && <PortfolioView result={result} onSelectItem={setSelectedId} onNavigate={setTab}/>} 

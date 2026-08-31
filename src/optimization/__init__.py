@@ -1,5 +1,16 @@
 """Reusable retail price-optimization utilities."""
 
+from .dataset import (
+    attach_elasticity_provenance,
+    build_optimization_dataset,
+    build_withheld_recommendations,
+    default_profit_configuration,
+    split_priceable_items,
+)
+from .product_summary import (
+    build_product_recommendation_summary,
+    build_product_summary,
+)
 from .pricing import (
     PriceOptimizationResult,
     PricingOptimizationConfig,
@@ -28,10 +39,16 @@ from .pricing import (
 __all__ = [
     "PriceOptimizationResult",
     "PricingOptimizationConfig",
+    "attach_elasticity_provenance",
     "build_optimization_action_summary",
     "build_optimization_category_summary",
     "build_optimization_configuration",
+    "build_optimization_dataset",
+    "build_product_recommendation_summary",
+    "build_product_summary",
+    "build_withheld_recommendations",
     "calculate_confidence_dampening_factor",
+    "default_profit_configuration",
     "calculate_minimum_price_for_margin",
     "classify_pricing_action",
     "evaluate_price_scenarios",
@@ -43,6 +60,7 @@ __all__ = [
     "run_price_sensitivity_analysis",
     "safe_change_rate",
     "select_optimal_price_scenario",
+    "split_priceable_items",
     "summarize_optimization_portfolio",
     "summarize_recommendation_validation",
     "validate_price_recommendations",

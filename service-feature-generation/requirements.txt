@@ -1,0 +1,15 @@
+# Feature generation API service dependencies.
+#
+# This service only serves an already-computed CSV artifact (see
+# app/services/artifact_store.py) -- it does not run retrieval or
+# feature extraction itself, so it needs none of src/'s heavier
+# retrieval/embedding dependencies.
+
+fastapi>=0.110.0,<1.0
+uvicorn[standard]>=0.29.0,<1.0
+pydantic-settings>=2.2.0,<3.0
+pandas>=2.2.0,<4.0
+
+# Tests
+pytest>=7.4.0
+httpx>=0.27.0,<1.0

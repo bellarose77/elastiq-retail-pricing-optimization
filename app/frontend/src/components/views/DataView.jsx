@@ -2,6 +2,7 @@ import { useMemo, useRef, useState } from "react";
 import { parseCSV, downloadCSV, csvTemplate } from "../../lib/report.js";
 import { analyzeInput } from "../../lib/inputAnalysis.js";
 import { fmtNum, fmtPctPlain, fmtPrice } from "../../lib/format.js";
+import { fetchLiveProducts } from "../../lib/api.js";
 
 // Mirrors parseCSV's validation in lib/report.js so an inline edit can't put
 // data into a worse state than a CSV import would ever be allowed to:
@@ -20,7 +21,22 @@ export default function DataView({ items, setItems }) {
   const [importMessage, setImportMessage] = useState("");
   const [drafts, setDrafts] = useState({});
   const [invalidCells, setInvalidCells] = useState(new Set());
+  const [liveLoading, setLiveLoading] = useState(false);
   const analysis = useMemo(() => analyzeInput(items), [items]);
+
+  const loadLiveData = async () => {
+    setLiveLoading(true);
+    try {
+      const products = await fetchLiveProducts();
+      setItems(products);
+      setImportMessage(`Loaded ${products.length} products live from the pricing API.`);
+    } catch (err) {
+      setImportMessage("");
+      alert("Could not load live data: " + err.message);
+    } finally {
+      setLiveLoading(false);
+    }
+  };
 
   const cellKey = (idx, key) => idx + ":" + key;
 
@@ -135,6 +151,7 @@ export default function DataView({ items, setItems }) {
         <div className="panel-head">
           <div><h3>Catalog data</h3><p className="panel-sub">Edit any cell, add units, or import a CSV. Everything recomputes live.</p></div>
           <div className="btn-group">
+            <button className="btn ghost" onClick={loadLiveData} disabled={liveLoading} title="Fetch the live catalog from the ELASTIQ pricing API (service-pricing-optimization)">{liveLoading ? "Loading…" : "Load live data"}</button>
             <button className="btn ghost" onClick={() => fileRef.current.click()}>Import CSV</button>
             <button className="btn ghost" onClick={() => downloadCSV(csvTemplate(items), "pricing_input_template.csv")}>Download template</button>
             <button className="btn" onClick={addRow}>Add unit</button>

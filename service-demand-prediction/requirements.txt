@@ -1,0 +1,15 @@
+# Demand prediction API service dependencies.
+#
+# This service only serves an already-computed CSV artifact (see
+# app/services/artifact_store.py) -- it does not train or run the
+# XGBoost model itself, so it needs none of src/'s heavier ML
+# dependencies (xgboost, scikit-learn, statsmodels...).
+
+fastapi>=0.110.0,<1.0
+uvicorn[standard]>=0.29.0,<1.0
+pydantic-settings>=2.2.0,<3.0
+pandas>=2.2.0,<4.0
+
+# Tests
+pytest>=7.4.0
+httpx>=0.27.0,<1.0

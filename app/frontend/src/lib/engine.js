@@ -42,10 +42,16 @@ export function getComputationMetrics() {
 
 export const DEFAULT_CONFIG = {
   objective: "profit",
-  // Kept in step with PricingOptimizationConfig in
-  // src/optimization/pricing.py. These previously diverged silently
-  // (max +0.25 vs +0.20, actionThreshold 0.01 vs 0.005), so the same SKU
-  // produced different prices in the app and the pipeline.
+  // Kept in step with PricingOptimizationConfig's own bare class
+  // defaults in src/optimization/pricing.py (verified by the
+  // cross-language parity fixture below) -- NOT the same as the
+  // stricter production policy default_profit_configuration() in
+  // src/optimization/dataset.py actually enforces (-10%/+20% not
+  // -20%/+20%, 15% margin not 0%, 15% competitor tolerance not
+  // unlimited). The live pricing service always enforces that stricter
+  // policy regardless of this app's configured guardrails here, so a
+  // live-sourced recommendation validating against a looser configured
+  // floor here is expected, not a bug -- see lib/liveRecommendations.js.
   minPriceChangeRate: -0.2,
   maxPriceChangeRate: 0.2,
   priceChangeStep: 0.01,
@@ -287,7 +293,7 @@ export const TECHNIQUES = {
   },
 };
 
-const classifyAction = (r, t) => (!isFin(r) ? "review" : r > t ? "increase_price" : r < -t ? "decrease_price" : "hold_price");
+export const classifyAction = (r, t) => (!isFin(r) ? "review" : r > t ? "increase_price" : r < -t ? "decrease_price" : "hold_price");
 
 /* ==========================================================================
    PER-ITEM OPTIMIZATION
@@ -485,6 +491,17 @@ export function optimizePortfolio(items, config = {}, techArg) {
     });
   }
 
+  return summarizePortfolio(rows, cfg, tech, portfolioInfo);
+}
+
+/* Aggregates a set of already-optimized rows (from optimizeItem, or from
+   patching live pricing-service recommendations onto them -- see
+   lib/liveRecommendations.js) into the portfolio-level view every page
+   consumes: scenario comparison, category rollups, guardrail validation,
+   and the executive summary. Pure function of `rows` -- reused so both
+   the fully client-computed path and the live-service-backed path
+   produce the exact same result shape. */
+export function summarizePortfolio(rows, cfg, tech, portfolioInfo = null) {
   const scen = (name, label) => {
     const demand = rows.reduce((a, r) => a + r._scenarios[name].demand, 0);
     const revenue = rows.reduce((a, r) => a + r._scenarios[name].revenue, 0);
